@@ -1,14 +1,12 @@
 package EightPuzzlePackage;
 
-import java.util.*;
 
-
-/*
+/**
  * This class represents the 8-puzzle problem. It contains the board structure which maintains the
  * current state of the puzzle. It also contains the methods to move the blank space in the puzzle
  * , reads a file to initialize the board and prints the board at the current state.
  */
-public class EightPuzzle {
+public class EightPuzzle implements Puzzle{
 
     /* This contains the board that will be configured in the eight puzzle. */
     private char[][] board;
@@ -45,6 +43,7 @@ public class EightPuzzle {
 
     }
 
+    @Override
     /* Make n random moves from the goal state.  */
     public void randomizeState(int n) {
 
@@ -78,6 +77,37 @@ public class EightPuzzle {
         }
     }
 
+    /* This method will check if move is valid for a possible move.
+     * if a move is valid, then it will check for the direction
+     * and call for swap method.
+     * This will make sure the blank tile will not move off the board
+     * */
+    private boolean isValidMove(Direction direction, int row, int col){
+
+        //ensuring blank tile doesn't go out of bounds on top.
+        if(direction == Direction.UP && row == 0){
+            return false;
+        }
+        //ensuring blank tile doesn't go out of bounds on bottom.
+        if(direction == Direction.DOWN && row == board().length - 1){
+            return false;
+        }
+        //ensuring blank tile doesn't go out of bounds leftward.
+        if(direction == Direction.LEFT && col == 0){
+            return false;
+        }
+        //ensuring blank tile doesn't go out of bounds rightward
+        if(direction == Direction.RIGHT && col == board()[row].length - 1){
+            return false;
+        }
+
+
+
+
+
+        return true;
+    }
+
     /* helper method to perform swap of blank tile up a tile */
     private void swapUp(int row, int col) {
 
@@ -98,9 +128,6 @@ public class EightPuzzle {
         //set blank row and col
         blankRow(row - 1);
         blankCol(col);
-
-
-
     }
 
     /* helper method to perform swap of blank tile up a tile, we then save it to a new state which */
@@ -122,7 +149,6 @@ public class EightPuzzle {
         //set blank row and col
         blankRow(row + 1);
         blankCol(col);
-
     }
 
     /* helper method to perform swap of blank tile left a tile */
@@ -165,9 +191,7 @@ public class EightPuzzle {
         //set blank row and col
         blankRow(row);
         blankCol(col + 1);
-
     }
-
 
     /* this method will find and save blank row, col */
     private void findBlankRowandCol() {
@@ -182,7 +206,7 @@ public class EightPuzzle {
     }
 
     /* printing board of current state */
-    void printBoard() {
+    public void printState() {
         for (int row = 0; row < board().length; row++) {
             for (int col = 0; col < board()[row].length; col++) {
                 System.out.print(board()[row][col] + " ");
@@ -190,6 +214,38 @@ public class EightPuzzle {
             System.out.println();
         }
     }
+
+    @Override
+    public boolean isGoalState(State state) {
+        return false;
+    }
+
+    @Override
+    public boolean isSolveable(State state) {
+        return false;
+    }
+
+    @Override
+    public void solveAStar(String heuristic){
+
+    }
+
+    @Override
+    public void solveBeam(int k){
+
+    }
+
+    @Override
+    public void solveDFS(){
+
+    }
+
+    @Override
+    public void solveBFS(){
+
+    }
+
+
 
      char[][] board() {
         return board;

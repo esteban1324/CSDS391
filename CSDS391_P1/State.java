@@ -14,6 +14,9 @@ public final class State {
     /* contains reference to parent state */
     private State parent;
 
+    /* contains the direction of last move */
+    private Direction direction;
+
     /* contains the depth of the state */
     private int depth;
 
@@ -47,7 +50,7 @@ public final class State {
 
     /* method that print current puzzle state */
     public void printState() {
-        board().printBoard();
+        board().printState();
     }
 
 
