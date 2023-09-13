@@ -29,18 +29,45 @@ public class EightPuzzle implements Puzzle{
         state = new State(this, null, 0, 0);
     }
 
-    /* This method will read the file and initialize the board. */
-    public void initializeBoard(String fileName) {
+    char[][] board() {
+        return board;
+    }
 
-        //here we should randomize the eight puzzle board
+    void setBoard(char[][] board) {
+        this.board = board;
+    }
 
-        //we should then read the commands the user inputs and move the blank space accordingly
+    int blankRow() {
+        return blankRow;
+    }
 
-        //we should then print the board after each move
+    void blankRow(int blankRow) {
+        this.blankRow = blankRow;
+    }
 
-        //we should then check if the board is in the goal state
+    int blankCol() {
+        return blankCol;
+    }
 
+    void blankCol(int blankCol) {
+        this.blankCol = blankCol;
+    }
 
+    public int maxNodes() {
+        return maxNodes;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    State state() {
+        return state;
+    }
+
+    /* This method will specify the max nodes allowed in search */
+    public void maxNodes(int maxNodes) {
+        this.maxNodes = maxNodes;
     }
 
     @Override
@@ -54,25 +81,21 @@ public class EightPuzzle implements Puzzle{
         }
     }
 
-    /* This method will specify the max nodes allowed in search */
-    public void maxNodes(int maxNodes) {
-        this.maxNodes = maxNodes;
-    }
-
     /* This method will move the blank space in the specified direction. */
     public void move(Direction direction) {
         int row = blankRow();
         int col = blankCol();
 
-        //add case for when tile is on the edge of the board and cannot be moved in that direction. Throw exception
-        if (direction == Direction.UP && board()[row][col] == 'b') {
+        if(direction == Direction.UP && isValidMove(direction, row, col)){
             swapUp(row, col);
         }
-        else if (direction == Direction.DOWN && board()[row][col] == 'b') {
+        else if(direction == Direction.DOWN && isValidMove(direction, row, col)){
             swapDown(row, col);
-        } else if (direction == Direction.LEFT && board()[row][col] == 'b') {
+        }
+        else if(direction == Direction.LEFT && isValidMove(direction, row, col)){
             swapLeft(row, col);
-        } else if (direction == Direction.RIGHT && board()[row][col] == 'b') {
+        }
+        else if(direction == Direction.RIGHT && isValidMove(direction, row, col)){
             swapRight(row, col);
         }
     }
@@ -100,10 +123,6 @@ public class EightPuzzle implements Puzzle{
         if(direction == Direction.RIGHT && col == board()[row].length - 1){
             return false;
         }
-
-
-
-
 
         return true;
     }
@@ -207,12 +226,19 @@ public class EightPuzzle implements Puzzle{
 
     /* printing board of current state */
     public void printState() {
+        System.out.println(this);
+    }
+
+    /* this method will return the string representation of the board */
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
         for (int row = 0; row < board().length; row++) {
             for (int col = 0; col < board()[row].length; col++) {
-                System.out.print(board()[row][col] + " ");
+                sb.append(board()[row][col] + " ");
             }
-            System.out.println();
+            sb.append("\n");
         }
+        return sb.toString();
     }
 
     @Override
@@ -244,43 +270,4 @@ public class EightPuzzle implements Puzzle{
     public void solveBFS(){
 
     }
-
-
-
-     char[][] board() {
-        return board;
-    }
-
-     void setBoard(char[][] board) {
-        this.board = board;
-    }
-
-     int blankRow() {
-        return blankRow;
-    }
-
-     void blankRow(int blankRow) {
-        this.blankRow = blankRow;
-    }
-
-     int blankCol() {
-        return blankCol;
-    }
-
-     void blankCol(int blankCol) {
-        this.blankCol = blankCol;
-    }
-
-    public int maxNodes() {
-        return maxNodes;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    State state() {
-        return state;
-    }
-
 }

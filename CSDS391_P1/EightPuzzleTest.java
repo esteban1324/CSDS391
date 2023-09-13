@@ -5,60 +5,60 @@ import static org.junit.jupiter.api.Assertions.*;
 class EightPuzzleTest {
 
     @org.junit.jupiter.api.Test
-    void move() {
+    void moveFunctionality() {
 
 
         // Create a new board
         EightPuzzle board = new EightPuzzle();
 
-        // get the state of the board
+        //test eligible moves
         State state = board.state();
 
-        state.printState();
+        // assert toString board is correct
+        assertEquals("b 1 2 \n3 4 5 \n6 7 8 \n", state.board().toString());
 
-        // move the blank tile up
+        // Test 1: Move DOWN
         board.move(Direction.DOWN);
 
-        System.out.println();
+        assertEquals("3 1 2 \nb 4 5 \n6 7 8 \n", state.board().toString());
 
-        // print the new state of the board
-        state.printState();
 
-        // Test 2: Move DOWN
-        board.move(Direction.DOWN);
-
-        System.out.println();
-
-        state.printState();
-
-        board.move(Direction.UP);
-
-        System.out.println();
-
-        state.printState();
-
-        //move it right
+        // Test 2: Move RIGHT
         board.move(Direction.RIGHT);
 
-        System.out.println();
+        assertEquals("3 1 2 \n4 b 5 \n6 7 8 \n", state.board().toString());
 
-        state.printState();
+        // Test 3: Move UP
+        board.move(Direction.UP);
 
+        assertEquals("3 b 2 \n4 1 5 \n6 7 8 \n", state.board().toString());
 
+        // Test 4: Move LEFT
+        board.move(Direction.LEFT);
 
+        assertEquals("b 3 2 \n4 1 5 \n6 7 8 \n", state.board().toString());
 
+        /* board cases work for valid moves */
 
+        //test invalid moves, 'b' should not move
 
+        //Test 5: Move Left
+        board.move(Direction.LEFT);
 
+        assertEquals("b 3 2 \n4 1 5 \n6 7 8 \n", state.board().toString());
 
+        //Test 6: Move Up
+        board.move(Direction.UP);
+
+        assertEquals("b 3 2 \n4 1 5 \n6 7 8 \n", state.board().toString());
 
     }
-
+    
     @org.junit.jupiter.api.Test
-    void board() {
+    void isSolvable(){
+        
     }
-
-    @org.junit.jupiter.api.Test
-    void setState() {
-    }
+    
+    
+    
 }
