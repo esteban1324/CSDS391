@@ -351,15 +351,13 @@ public class EightPuzzle implements Puzzle {
 
         return true;
     }
-
-
-    //TODO: implement A* search with h1 heuristic and h2 heuristic
+    
     @Override
     public void solveAStar(String heuristic) {
         if (heuristic.equals("h1")) {
             solveAStarH1();
         } else if (heuristic.equals("h2")) {
-            //solveAStarH2();
+            solveAStarH2();
         } else
             throw new IllegalArgumentException("input not correctly inputted");
     }
@@ -389,17 +387,6 @@ public class EightPuzzle implements Puzzle {
             visitedSet.put(node.board().toString(), node);
 
 
-
-
-
-
-
-
-
-
-
-
-
             //check if the node is at the goal state. if it is we break.
             if (isGoalState(node)) break;
 
@@ -408,42 +395,42 @@ public class EightPuzzle implements Puzzle {
 
             //for each children in node
             for (State childNode : children) {
-                //if we have not visited nodes of children then check for calculate cost
-                if (!visitedSet.containsValue(childNode) || !frontier.contains(childNode)) {
-                    childNode.fWeight = childNode.depth + h1(childNode);
-                    System.out.println("childNode " + childNode + " depth: " + childNode.depth + " h1: " + h1(childNode) + " f(n): " + childNode.fWeight);
-                    frontier.add(childNode);
+                // if childNode is in frontier and curr depth is less than existing depth
+                // remove childNode from frontier
+                 if (frontier.contains(childNode) && childNode.depth < frontier.peek().depth) {
+                    frontier.remove(childNode);
                 }
-                //update the g(n) or depth value if node is in priority queue
-                else{
-                    State existingNode = frontier.poll();
-                    //if the depth of the childNode is less than the existingNode then update the depth
-                    if (childNode.depth < existingNode.depth) {
-                        existingNode.depth = childNode.depth;
-                        existingNode.setParent(childNode.parent());
-                    }
-                    frontier.add(existingNode);
+                // if childNode is in visited set and curr depth is less than existing depth, remove childNode from visited set
+                else if (visitedSet.containsValue(childNode) && childNode.depth < visitedSet.get(childNode.board().toString()).depth) {
+                    visitedSet.remove(childNode);
+                }
+                //if n is not in frontier and n is not in closedList then add n to frontier
+                else if (!frontier.contains(childNode) && !visitedSet.containsValue(childNode)) {
+                    //if not in frontier then add to frontier, and calculate f(n) value
+                    childNode.fWeight = childNode.depth + h1(childNode);
+                    frontier.add(childNode);
+                    childNode.setParent(node);
                 }
             }
+            //update the g(n) or depth value if node is in priority queue
             counter++;
         }
 
+    //if we reach here then we have not found a solution
+      if (counter >= maxNodes) {
+        throw new IllegalStateException("No solution found");
+      }
 
-        //if we reach here then we have not found a solution
-        //  if (counter >= maxNodes) {
-        //     throw new IllegalStateException("No solution found");
-        //  }
+    State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
 
-
-        State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
-        //look for path from visitedSet of nodes to see if it's there
-        if (goalNode != null) {
-            path = getPath(goalNode);
-        }
-
-        //print list of path.
-        System.out.println(path);
+    //look for path from visitedSet of nodes to see if it's there
+        if(goalNode !=null){
+        path = getPath(goalNode);
     }
+
+    //print list of path.
+        System.out.println(path);
+}
 
     /* get path to goal state by backtracking and accessioning parent */
     public List<State> getPath(State goalState) {
@@ -470,9 +457,60 @@ public class EightPuzzle implements Puzzle {
     /* A* algo based on H2 heuristic */
     private void solveAStarH2() {
 
+        List<State> path = new LinkedList<>();
+        PriorityQueue<State> frontier = new PriorityQueue<>();
+        Map<String, State> visitedSet = new HashMap<>();
+
+        State startingNode = new State(state.board(), null, null, 0, h2(state));
+
+
+        frontier.add(startingNode);
+
+        int counter = 0;
+
+        while(!frontier.isEmpty() && counter < maxNodes()){
+
+            State node = frontier.poll();
+
+            visitedSet.put(node.board().toString(), node);
+
+            if(isGoalState(node)) break;
+
+            List<State> children = node.neighbors();
+
+            for(State child: children){
+
+                if(frontier.contains(child) && child.depth < frontier.peek().depth){
+                    frontier.remove(child);
+                }
+                else if(visitedSet.containsValue(child) && child.depth < visitedSet.get(child.board().toString()).depth){
+                    visitedSet.remove(child.board().toString());
+                }
+                else if(!frontier.contains(child) && !visitedSet.containsValue(child)){
+                    child.fWeight = child.depth + h2(child);
+                    frontier.add(child);
+                    child.setParent(node);
+                }
+            }
+            counter++;
+        }
+
+        if (counter >= maxNodes) {
+            throw new IllegalStateException("No solution found");
+        }
+
+        State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
+
+        if(goalNode != null){
+            path = getPath(goalNode);
+        }
+
+        System.out.println(path);
     }
 
-
+    /*
+     * This is the eight-puzzle algorithm that will solve beam-search.
+     */
     @Override
     public void solveBeam(int k) {
 

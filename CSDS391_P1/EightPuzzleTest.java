@@ -276,7 +276,7 @@ class EightPuzzleTest {
                     {'3', '1', '2'},
                     {'b', '4', '5'},
                     {'6', '7', '8'}});
-       //      eightPuzzle.solveAStar("h1");
+          //  eightPuzzle.solveAStar("h1");
 
             // test when it's at goal state
             EightPuzzle puzzle2 = new EightPuzzle();
@@ -288,9 +288,19 @@ class EightPuzzleTest {
 
 
             puzzle2.maxNodes(10000);
-            puzzle2.solveAStar("h1");
+          //  puzzle2.solveAStar("h1");
 
             //test 3 when its
+            EightPuzzle puzzle3 = new EightPuzzle();
+
+            puzzle3.setBoard(new char[][]{{'1', '2', '3'},
+                    {'4', 'b', '5'},
+                    {'6', '7', '8'}});
+
+            puzzle2.maxNodes(10000);
+
+            puzzle3.solveAStar("h2");
+
 
 
 
