@@ -11,16 +11,11 @@ public interface Puzzle {
 
     boolean isGoalState(State state);
 
-    boolean isSolveable(State state);
 
     void solveAStar(String heuristic);
 
     void solveBeam(int maxNodes);
 
     void maxNodes(int maxNodes);
-
-    void solveDFS();
-
-    void solveBFS();
 
 }

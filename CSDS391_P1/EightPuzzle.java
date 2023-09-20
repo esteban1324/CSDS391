@@ -1,15 +1,16 @@
 package EightPuzzlePackage;
 
+import java.util.*;
 
 /**
  * This class represents the 8-puzzle problem. It contains the board structure which maintains the
  * current state of the puzzle. It also contains the methods to move the blank space in the puzzle
  * , reads a file to initialize the board and prints the board at the current state.
  */
-public class EightPuzzle implements Puzzle{
+public class EightPuzzle implements Puzzle {
 
     /* This contains the board that will be configured in the eight puzzle. */
-    private char[][] board;
+    private char[][] board = {{'b', '1', '2'}, {'3', '4', '5'}, {'6', '7', '8'}};
 
     /* This contains the row of the blank space. */
     private int blankRow;
@@ -24,14 +25,15 @@ public class EightPuzzle implements Puzzle{
 
     /* This is the constructor for the eight puzzle. */
     public EightPuzzle() {
-        board = new char[][]{{'b', '1', '2'}, {'3', '4', '5'}, {'6', '7', '8'}};
         this.maxNodes = Integer.MAX_VALUE;
-        state = new State(this, null, 0, 0);
+        state = new State(this, null, null);
     }
 
     char[][] board() {
         return board;
     }
+
+    private char[][] goalState = {{'b', '1', '2'}, {'3', '4', '5'}, {'6', '7', '8'}};
 
     void setBoard(char[][] board) {
         this.board = board;
@@ -70,32 +72,47 @@ public class EightPuzzle implements Puzzle{
         this.maxNodes = maxNodes;
     }
 
+    public char[][] cloneBoard() {
+        char[][] clone = new char[board().length][board()[0].length];
+        for (int i = 0; i < board().length; i++) {
+            for (int j = 0; j < board()[0].length; j++) {
+                clone[i][j] = board()[i][j];
+            }
+        }
+        return clone;
+    }
+
     @Override
     /* Make n random moves from the goal state.  */
     public void randomizeState(int n) {
+        //scramble the board
+        Direction[] directions = {Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT};
+        Random random = new Random();
 
         //here we should randomize the eight puzzle board
         for (int i = 0; i < n; i++) {
-
-
+            int randomDirection = random.nextInt(4);
+            move(directions[randomDirection]);
         }
     }
 
+
     /* This method will move the blank space in the specified direction. */
     public void move(Direction direction) {
+
+        //first we need to find the blank space and set row and col to this.
+        findBlankRowandCol();
+
         int row = blankRow();
         int col = blankCol();
 
-        if(direction == Direction.UP && isValidMove(direction, row, col)){
+        if (direction == Direction.UP && isValidMove(direction, row, col)) {
             swapUp(row, col);
-        }
-        else if(direction == Direction.DOWN && isValidMove(direction, row, col)){
+        } else if (direction == Direction.DOWN && isValidMove(direction, row, col)) {
             swapDown(row, col);
-        }
-        else if(direction == Direction.LEFT && isValidMove(direction, row, col)){
+        } else if (direction == Direction.LEFT && isValidMove(direction, row, col)) {
             swapLeft(row, col);
-        }
-        else if(direction == Direction.RIGHT && isValidMove(direction, row, col)){
+        } else if (direction == Direction.RIGHT && isValidMove(direction, row, col)) {
             swapRight(row, col);
         }
     }
@@ -105,22 +122,24 @@ public class EightPuzzle implements Puzzle{
      * and call for swap method.
      * This will make sure the blank tile will not move off the board
      * */
-    private boolean isValidMove(Direction direction, int row, int col){
+    boolean isValidMove(Direction direction, int row, int col) {
+        //find blank tile first
+        findBlankRowandCol();
 
         //ensuring blank tile doesn't go out of bounds on top.
-        if(direction == Direction.UP && row == 0){
+        if (direction == Direction.UP && row == 0) {
             return false;
         }
         //ensuring blank tile doesn't go out of bounds on bottom.
-        if(direction == Direction.DOWN && row == board().length - 1){
+        if (direction == Direction.DOWN && row == board().length - 1) {
             return false;
         }
         //ensuring blank tile doesn't go out of bounds leftward.
-        if(direction == Direction.LEFT && col == 0){
+        if (direction == Direction.LEFT && col == 0) {
             return false;
         }
         //ensuring blank tile doesn't go out of bounds rightward
-        if(direction == Direction.RIGHT && col == board()[row].length - 1){
+        if (direction == Direction.RIGHT && col == board()[row].length - 1) {
             return false;
         }
 
@@ -140,7 +159,7 @@ public class EightPuzzle implements Puzzle{
         board()[row - 1][col] = temp;
 
         //save new state with new board
-        State newState = new State(this, state(), state.depth() + 1, state.cost() + 1);
+        State newState = new State(this, state(), Direction.UP);
 
         setState(newState);
 
@@ -161,7 +180,7 @@ public class EightPuzzle implements Puzzle{
         board()[row + 1][col] = temp;
 
         //save new state with new board
-        State newState = new State(this, state(), state.depth() + 1, state.cost() + 1);
+        State newState = new State(this, state(), Direction.DOWN);
 
         setState(newState);
 
@@ -182,7 +201,7 @@ public class EightPuzzle implements Puzzle{
         board()[row][col - 1] = temp;
 
         //save new state with new board
-        State newState = new State(this, state(), state.depth() + 1, state.cost() + 1);
+        State newState = new State(this, state(), Direction.LEFT);
 
         setState(newState);
 
@@ -203,7 +222,7 @@ public class EightPuzzle implements Puzzle{
         board()[row][col + 1] = temp;
 
         //save new state with new board
-        State newState = new State(this, state(), state.depth() + 1, state.cost() + 1);
+        State newState = new State(this, state(), Direction.RIGHT);
 
         setState(newState);
 
@@ -230,7 +249,7 @@ public class EightPuzzle implements Puzzle{
     }
 
     /* this method will return the string representation of the board */
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int row = 0; row < board().length; row++) {
             for (int col = 0; col < board()[row].length; col++) {
@@ -241,33 +260,222 @@ public class EightPuzzle implements Puzzle{
         return sb.toString();
     }
 
+    /* this method will calculate the h1 heuristic, num of misplaced tiles */
+    public int h1(State state) {
+        int misplacedTiles = 0;
+        char[][] board = state.board().board();
+
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                if (board[row][col] != goalState[row][col] && board[row][col] != 'b') {
+                    misplacedTiles++;
+                }
+            }
+        }
+
+        return misplacedTiles;
+    }
+
+    /* this method will calculate the h2 heuristic, manhattan distance */
+    public int h2(State state) {
+        int h2 = 0;
+        char[][] board = state.board().board();
+
+        //for a given char at a row and col, if it doesn't equal goal state then compute manhattan distance
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                if (board[row][col] != goalState[row][col] && board[row][col] != 'b') {
+                    h2 += manhattanDistance(board[row][col], row, col);
+                }
+            }
+        }
+        return h2;
+    }
+
+    /* this method will calculate the manhattan distance of a tile, not including blank tile */
+    /* manhattan distance is calculated by |x1 - x2| + |y1 - y2| */
+    private int manhattanDistance(char c, int row, int col) {
+        return Math.abs(row - goalRow(c)) + Math.abs(col - goalCol(c));
+    }
+
+    /* this method will return the row of the goal state of a given tile */
+    private int goalRow(char c) {
+        //traverse through goal state array and find
+        for (int row = 0; row < goalState.length; row++) {
+            for (int col = 0; col < goalState[row].length; col++) {
+                //return row where c is found
+                if (goalState[row][col] == c)
+                    return row;
+            }
+        }
+        return -1;
+    }
+
+    /* this method will return the col of goal state of given tile */
+    private int goalCol(char c) {
+        for (int row = 0; row < goalState.length; row++) {
+            for (int col = 0; col < goalState[row].length; col++) {
+                //return col where c is found
+                if (goalState[row][col] == c)
+                    return col;
+            }
+        }
+        return -1;
+    }
+
+
+    /* f(n) = g(n) + h(n) */
+    /* This method will calculate the f(n) value of a state */
+    public int f1(State state) {
+        return state.depth + h1(state);
+    }
+
+    /* This method will calculate the f(n) value of a state */
+    public int f2(State state) {
+        return state.depth + h2(state);
+    }
+
+    /* this method will check if the current state is the goal state */
     @Override
     public boolean isGoalState(State state) {
-        return false;
+
+        char[][] board = state.board().board();
+
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                if (board[row][col] != goalState[row][col]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
+
+    //TODO: implement A* search with h1 heuristic and h2 heuristic
     @Override
-    public boolean isSolveable(State state) {
-        return false;
+    public void solveAStar(String heuristic) {
+        if (heuristic.equals("h1")) {
+            solveAStarH1();
+        } else if (heuristic.equals("h2")) {
+            //solveAStarH2();
+        } else
+            throw new IllegalArgumentException("input not correctly inputted");
     }
 
-    @Override
-    public void solveAStar(String heuristic){
+    /* A* algo based on H1 heuristic */
+    private void solveAStarH1() {
+        //path will be a list of states that will be the path to the goal state
+        //frontier will be a priority queue that will be sorted by f(n) value
+        //visited will be a set of states that have been visited
+        List<State> path = new LinkedList<>();
+        PriorityQueue<State> frontier = new PriorityQueue<>();
+        Map<String, State> visitedSet = new HashMap<>();
+
+
+        State startingNode = new State(state.board(), null, null, 0, h1(state));
+        //add initial state to frontier
+        frontier.add(startingNode);
+
+        int counter = 0;
+        //while frontier is not empty & counter is less than maxNodes
+        while (!frontier.isEmpty() && counter < maxNodes()) {
+
+            //pop the starting state here
+            State node = frontier.poll();
+
+            //add the node to visited set or closed list
+            visitedSet.put(node.board().toString(), node);
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //check if the node is at the goal state. if it is we break.
+            if (isGoalState(node)) break;
+
+            //generate the children of the node
+            List<State> children = node.neighbors();
+
+            //for each children in node
+            for (State childNode : children) {
+                //if we have not visited nodes of children then check for calculate cost
+                if (!visitedSet.containsValue(childNode) || !frontier.contains(childNode)) {
+                    childNode.fWeight = childNode.depth + h1(childNode);
+                    System.out.println("childNode " + childNode + " depth: " + childNode.depth + " h1: " + h1(childNode) + " f(n): " + childNode.fWeight);
+                    frontier.add(childNode);
+                }
+                //update the g(n) or depth value if node is in priority queue
+                else{
+                    State existingNode = frontier.poll();
+                    //if the depth of the childNode is less than the existingNode then update the depth
+                    if (childNode.depth < existingNode.depth) {
+                        existingNode.depth = childNode.depth;
+                        existingNode.setParent(childNode.parent());
+                    }
+                    frontier.add(existingNode);
+                }
+            }
+            counter++;
+        }
+
+
+        //if we reach here then we have not found a solution
+        //  if (counter >= maxNodes) {
+        //     throw new IllegalStateException("No solution found");
+        //  }
+
+
+        State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
+        //look for path from visitedSet of nodes to see if it's there
+        if (goalNode != null) {
+            path = getPath(goalNode);
+        }
+
+        //print list of path.
+        System.out.println(path);
+    }
+
+    /* get path to goal state by backtracking and accessioning parent */
+    public List<State> getPath(State goalState) {
+
+        List<State> winningPath = new LinkedList<>();
+        Stack<State> path = new Stack<>();
+        State currState = goalState;
+
+        //add the goal state to the stack and then access the parent
+        while (currState != null) {
+            path.push(currState);
+            currState = currState.parent();
+        }
+
+        //once we have the path in the stack, we will pop the stack and add it to a list
+        while (!path.isEmpty()) {
+            winningPath.add(path.pop());
+        }
+
+        return winningPath;
+    }
+
+
+    /* A* algo based on H2 heuristic */
+    private void solveAStarH2() {
 
     }
 
-    @Override
-    public void solveBeam(int k){
-
-    }
 
     @Override
-    public void solveDFS(){
-
-    }
-
-    @Override
-    public void solveBFS(){
+    public void solveBeam(int k) {
 
     }
 }
+
