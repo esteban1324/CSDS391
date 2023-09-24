@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,11 +68,6 @@ class EightPuzzleTest {
         board2.move(Direction.RIGHT);
 
         assertEquals("3 1 2 \n6 4 5 \n7 8 b \n", board2.toString());
-
-    }
-
-    @org.junit.jupiter.api.Test
-    void isSolvable() {
 
     }
 
@@ -147,7 +143,7 @@ class EightPuzzleTest {
 
         //print out depth of second neighbor
 
-        assertEquals(1, secondNeighbor.depth);
+        assertEquals(1, secondNeighbor.depth());
 
         //now with this state, get its neighbors
         List<State> secondNeighbors = secondNeighbor.neighbors();
@@ -158,7 +154,7 @@ class EightPuzzleTest {
         assertEquals("3 2 6 \n5 4 1 \n7 8 b \n", thirdNeighbor.board().toString());
 
 
-        assertEquals(2, thirdNeighbor.depth);
+        assertEquals(2, thirdNeighbor.depth());
 
 
     }
@@ -197,114 +193,144 @@ class EightPuzzleTest {
 
         State state2 = ep2.state();
 
-         int ep2h1 = ep2.h1(state2);
+        int ep2h1 = ep2.h1(state2);
 
-         assertEquals(8, ep2h1);
+        assertEquals(8, ep2h1);
 
-         int ep2h2 = ep2.h2(state2);
+        int ep2h2 = ep2.h2(state2);
 
-         assertEquals(15, ep2h2);
+        assertEquals(15, ep2h2);
 
-         //test 3 eight puzzle
-         EightPuzzle ep3 = new EightPuzzle();
+        //test 3 eight puzzle
+        EightPuzzle ep3 = new EightPuzzle();
 
-         ep3.setBoard(new char[][]{
-                 {'4','1','3'},
-                 {'b','2','5'},
-                 {'7','8','6'}});
+        ep3.setBoard(new char[][]{
+                {'4', '1', '3'},
+                {'b', '2', '5'},
+                {'7', '8', '6'}});
 
-         State ep3State = ep3.state();
+        State ep3State = ep3.state();
 
         int ep3h1 = ep3.h1(ep3State);
 
-        assertEquals(6,ep3h1);
+        assertEquals(6, ep3h1);
 
         int ep3h2 = ep3.h2(ep3State);
 
-        assertEquals(11,ep3h2);
+        assertEquals(11, ep3h2);
 
         //test 4 eight puzzle
         EightPuzzle ep4 = new EightPuzzle();
 
         //goal board
         ep4.setBoard(new char[][]{
-                {'b','1','2'},
-                {'3','4','5'},
-                {'6','7','8'}});
+                {'b', '1', '2'},
+                {'3', '4', '5'},
+                {'6', '7', '8'}});
 
         State ep4State = ep4.state();
 
         int ep4h1 = ep4.h1(ep4State);
 
-        assertEquals(0,ep4h1);
+        assertEquals(0, ep4h1);
 
         int ep4h2 = ep4.h2(ep4State);
 
-        assertEquals(0,ep4h2);
+        assertEquals(0, ep4h2);
 
         //test 5 eight puzzle
         EightPuzzle ep5 = new EightPuzzle();
 
         ep5.setBoard(new char[][]{
-                {'1','2','3'}, // 1 + 1 + 3 + 1 + 1 + 3 + 1 + 1 = 12
-                {'4','5','6'},
-                {'7','8','b'}});
+                {'1', '2', '3'}, // 1 + 1 + 3 + 1 + 1 + 3 + 1 + 1 = 12
+                {'4', '5', '6'},
+                {'7', '8', 'b'}});
 
         State ep5State = ep5.state();
 
         int ep5h1 = ep5.h1(ep5State);
 
-        assertEquals(8,ep5h1);
+        assertEquals(8, ep5h1);
 
         int ep5h2 = ep5.h2(ep5State);
 
-        assertEquals(12,ep5h2);
+        assertEquals(12, ep5h2);
 
         //looks like h1 and h2 are working correctly
 
 
-
-        }
-
-
-        @org.junit.jupiter.api.Test
-        void testAStar() {
-
-            //very simple case where it moves only one tile
-            EightPuzzle eightPuzzle = new EightPuzzle();
-            eightPuzzle.setBoard(new char[][]{
-                    {'3', '1', '2'},
-                    {'b', '4', '5'},
-                    {'6', '7', '8'}});
-          //  eightPuzzle.solveAStar("h1");
-
-            // test when it's at goal state
-            EightPuzzle puzzle2 = new EightPuzzle();
+    }
 
 
-            puzzle2.setBoard(new char[][]{{'b', '1', '2'},
-                    {'3', '4', '5'},
-                    {'6', '7', '8'}});
+    @org.junit.jupiter.api.Test
+    void testAStar() {
+
+        //very simple case where it moves only one tile
+        EightPuzzle eightPuzzle = new EightPuzzle();
+        eightPuzzle.setBoard(new char[][]{
+                {'3', '1', '2'},
+                {'b', '4', '5'},
+                {'6', '7', '8'}});
+        //  eightPuzzle.solveAStar("h1");
+
+        // test when it's at goal state
+        EightPuzzle puzzle2 = new EightPuzzle();
 
 
-            puzzle2.maxNodes(10000);
-          //  puzzle2.solveAStar("h1");
-
-            //test 3 when its
-            EightPuzzle puzzle3 = new EightPuzzle();
-
-            puzzle3.setBoard(new char[][]{{'1', '2', '3'},
-                    {'4', 'b', '5'},
-                    {'6', '7', '8'}});
-
-            puzzle2.maxNodes(10000);
-
-            puzzle3.solveAStar("h2");
+        puzzle2.setBoard(new char[][]{
+                {'b', '1', '2'},
+                {'3', '4', '5'},
+                {'6', '7', '8'}});
 
 
+        puzzle2.maxNodes(10000);
+        //  puzzle2.solveAStar("h1");
+
+        //test 3 A* for h1
+        EightPuzzle puzzle3 = new EightPuzzle();
+
+        puzzle3.setBoard(new char[][]{
+                {'1', '2', '3'},
+                {'4', 'b', '5'},
+                {'6', '7', '8'}});
+
+       // puzzle3.solveAStar("h1");
+
+        //test 4 A* for h2
+        EightPuzzle puzzle4 = new EightPuzzle();
+
+        puzzle4.setBoard(new char[][]{
+                {'b','2','3'},
+                {'7','5','1'},
+                {'4','6','8'}});
 
 
-        }
+        //“b23751468”
+
+        //puzzle4.maxNodes(10000);
+
+
+        //puzzle4.solveAStar("h1");
+
+
+
+        //3254687b1
+        EightPuzzle puzzle5 = new EightPuzzle();
+
+
+        puzzle5.setBoard(new char[][]{
+                {'3','2','5'},
+                {'4','6','8'},
+                {'7','b','1'}
+
+        });
+
+
+        puzzle5.solveAStar("h2");
+
 
 
     }
+
+
+}

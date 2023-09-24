@@ -15,21 +15,21 @@ public final class State implements Comparable<State> {
     private State parent;
 
     /* contains the direction of last move */
-    private Direction lastDirection;
+    private final Direction lastDirection;
 
     /* total cost of the start node to curr node calculated by f(n) = g(n) + h(n) */
-    public int fWeight;
+    private int fWeight;
 
     /* contains the depth of this state */
-    public int depth;
+    private int depth;
 
     /* constructor for initial state */
     public State(EightPuzzle board, State parent, Direction lastDirection){
         this.board = board;
-        this.parent = null;
-        this.lastDirection = null;
+        this.parent = parent;
+        this.lastDirection = lastDirection;
         this.depth = 0;
-        fWeight = 0;
+        this.fWeight = 0;
     }
 
     /* constructor for neighbors */
@@ -78,9 +78,23 @@ public final class State implements Comparable<State> {
         this.parent = parent;
     }
 
-    /* method that print current puzzle state */
-    public void printState() {
-        board().printState();
+
+    /* method that returns the depth of the state */
+    public int depth() {
+        return depth;
+    }
+
+    /* method that sets the depth of the state */
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public int fWeight() {
+        return fWeight;
+    }
+
+    public void setfWeight(int fWeight) {
+        this.fWeight = fWeight;
     }
 
     /* method that returns the direction of the last move */
@@ -99,8 +113,8 @@ public final class State implements Comparable<State> {
     public List<State> neighbors(){
 
         List<State> neighbors = new ArrayList<>();
-        EightPuzzle initialBoard = this.board();
-        State initialState = initialBoard.state();
+        State initialState = clone();
+        EightPuzzle initialBoard = initialState.board();
         findBlankRowandCol();
 
         // traverse through all directions {Up, Down, Left, Right}
@@ -115,7 +129,7 @@ public final class State implements Comparable<State> {
                 newBoard.move(dir);
 
                 //create new state with depth increasing by for g(n) calculation.
-                State newState = new State(newBoard, initialState, dir, depth + 1);
+                State newState = new State(newBoard, initialState, dir, initialState.depth() + 1);
 
                 neighbors.add(newState);
             }
@@ -126,12 +140,13 @@ public final class State implements Comparable<State> {
 
     /* method that clones the current state, avoid modifying actual board */
     public State clone(){
-        return new State(board(), parent, lastDirection, depth);
+        return new State(this.board(), parent, lastDirection, depth);
     }
 
     /* we will compare the weights in the pq. pq will be sorted by min cost */
     @Override
     public int compareTo(State o) {
-        return this.fWeight - o.fWeight;
+        return this.fWeight() - o.fWeight();
     }
+
 }

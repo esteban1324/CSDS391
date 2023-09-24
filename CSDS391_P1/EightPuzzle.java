@@ -1,6 +1,8 @@
 package EightPuzzlePackage;
 
+
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class represents the 8-puzzle problem. It contains the board structure which maintains the
@@ -22,6 +24,12 @@ public class EightPuzzle implements Puzzle {
 
     /* reference to the state, so we can change the state when we need to */
     private State state;
+
+    /* number of moves puzzle has */
+    public int numMoves;
+
+    /* logger to for debugging */
+    private static final Logger logger = Logger.getLogger(EightPuzzle.class.getName());
 
     /* This is the constructor for the eight puzzle. */
     public EightPuzzle() {
@@ -300,39 +308,36 @@ public class EightPuzzle implements Puzzle {
 
     /* this method will return the row of the goal state of a given tile */
     private int goalRow(char c) {
-        //traverse through goal state array and find
-        for (int row = 0; row < goalState.length; row++) {
-            for (int col = 0; col < goalState[row].length; col++) {
-                //return row where c is found
-                if (goalState[row][col] == c)
-                    return row;
-            }
-        }
-        return -1;
+
+        //hashmap to store goal row of each tile
+        Map<Character, Integer> goalRow = new HashMap<>();
+        goalRow.put('1', 0);
+        goalRow.put('2', 0);
+        goalRow.put('3', 1);
+        goalRow.put('4', 1);
+        goalRow.put('5', 1);
+        goalRow.put('6', 2);
+        goalRow.put('7', 2);
+        goalRow.put('8', 2);
+
+
+        return goalRow.get(c);
     }
 
     /* this method will return the col of goal state of given tile */
     private int goalCol(char c) {
-        for (int row = 0; row < goalState.length; row++) {
-            for (int col = 0; col < goalState[row].length; col++) {
-                //return col where c is found
-                if (goalState[row][col] == c)
-                    return col;
-            }
-        }
-        return -1;
-    }
+        //hashmap to store goal col of each tile
+        Map<Character, Integer> goalCol = new HashMap<>();
+        goalCol.put('1', 1);
+        goalCol.put('2', 2);
+        goalCol.put('3', 0);
+        goalCol.put('4', 1);
+        goalCol.put('5', 2);
+        goalCol.put('6', 0);
+        goalCol.put('7', 1);
+        goalCol.put('8', 2);
 
-
-    /* f(n) = g(n) + h(n) */
-    /* This method will calculate the f(n) value of a state */
-    public int f1(State state) {
-        return state.depth + h1(state);
-    }
-
-    /* This method will calculate the f(n) value of a state */
-    public int f2(State state) {
-        return state.depth + h2(state);
+        return goalCol.get(c);
     }
 
     /* this method will check if the current state is the goal state */
@@ -351,7 +356,7 @@ public class EightPuzzle implements Puzzle {
 
         return true;
     }
-    
+
     @Override
     public void solveAStar(String heuristic) {
         if (heuristic.equals("h1")) {
@@ -371,8 +376,9 @@ public class EightPuzzle implements Puzzle {
         PriorityQueue<State> frontier = new PriorityQueue<>();
         Map<String, State> visitedSet = new HashMap<>();
 
-
-        State startingNode = new State(state.board(), null, null, 0, h1(state));
+        State startingNode = new State(state.board(), null, null);
+        startingNode.setDepth(0);
+        startingNode.setfWeight(startingNode.depth() + h1(startingNode));
         //add initial state to frontier
         frontier.add(startingNode);
 
@@ -386,51 +392,48 @@ public class EightPuzzle implements Puzzle {
             //add the node to visited set or closed list
             visitedSet.put(node.board().toString(), node);
 
-
             //check if the node is at the goal state. if it is we break.
             if (isGoalState(node)) break;
 
-            //generate the children of the node
             List<State> children = node.neighbors();
 
-            //for each children in node
             for (State childNode : children) {
-                // if childNode is in frontier and curr depth is less than existing depth
-                // remove childNode from frontier
-                 if (frontier.contains(childNode) && childNode.depth < frontier.peek().depth) {
+                // if childNode is in frontier, and it's depth is less than the lowest depth in frontier,
+                // remove it because we have found a better path
+                if (frontier.contains(childNode) && childNode.depth() < frontier.peek().depth()) {
                     frontier.remove(childNode);
                 }
-                // if childNode is in visited set and curr depth is less than existing depth, remove childNode from visited set
-                else if (visitedSet.containsValue(childNode) && childNode.depth < visitedSet.get(childNode.board().toString()).depth) {
-                    visitedSet.remove(childNode);
+                //if childNode is in visitedSet, and it's depth is less than it's other path depth in visitedSet,
+                // remove it because we have found a better path
+                else if (visitedSet.containsValue(childNode) && childNode.depth() < visitedSet.get(childNode.board().toString()).depth()) {
+                    visitedSet.remove(childNode.board().toString());
                 }
-                //if n is not in frontier and n is not in closedList then add n to frontier
+                //if they aren't in frontier or visitedSet, add them to frontier and calculate cost
                 else if (!frontier.contains(childNode) && !visitedSet.containsValue(childNode)) {
-                    //if not in frontier then add to frontier, and calculate f(n) value
-                    childNode.fWeight = childNode.depth + h1(childNode);
-                    frontier.add(childNode);
+                    childNode.setfWeight(childNode.depth() + h1(childNode));
                     childNode.setParent(node);
+                    frontier.add(childNode);
                 }
             }
-            //update the g(n) or depth value if node is in priority queue
+
             counter++;
         }
 
-    //if we reach here then we have not found a solution
-      if (counter >= maxNodes) {
-        throw new IllegalStateException("No solution found");
-      }
+        //if we reach here then we have not found a solution
+        if (counter >= maxNodes) {
+            throw new IllegalStateException("No solution found");
+        }
 
-    State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
+        State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
 
-    //look for path from visitedSet of nodes to see if it's there
-        if(goalNode !=null){
-        path = getPath(goalNode);
+        //look for path from visitedSet of nodes to see if it's there
+        if (goalNode != null) {
+            path = getPath(goalNode);
+        }
+
+        //print list of path.
+        System.out.println(path + "numMoves: " + numMoves);
     }
-
-    //print list of path.
-        System.out.println(path);
-}
 
     /* get path to goal state by backtracking and accessioning parent */
     public List<State> getPath(State goalState) {
@@ -443,6 +446,7 @@ public class EightPuzzle implements Puzzle {
         while (currState != null) {
             path.push(currState);
             currState = currState.parent();
+            numMoves++;
         }
 
         //once we have the path in the stack, we will pop the stack and add it to a list
@@ -462,36 +466,34 @@ public class EightPuzzle implements Puzzle {
         Map<String, State> visitedSet = new HashMap<>();
 
         State startingNode = new State(state.board(), null, null, 0, h2(state));
-
+        startingNode.setfWeight(startingNode.depth() + h2(startingNode));
 
         frontier.add(startingNode);
 
         int counter = 0;
 
-        while(!frontier.isEmpty() && counter < maxNodes()){
+        while (!frontier.isEmpty() && counter < maxNodes()) {
 
             State node = frontier.poll();
 
             visitedSet.put(node.board().toString(), node);
 
-            if(isGoalState(node)) break;
+            if (isGoalState(node)) break;
 
             List<State> children = node.neighbors();
 
-            for(State child: children){
-
-                if(frontier.contains(child) && child.depth < frontier.peek().depth){
+            for (State child : children) {
+                if (frontier.contains(child) && child.depth() < frontier.peek().depth()) {
                     frontier.remove(child);
-                }
-                else if(visitedSet.containsValue(child) && child.depth < visitedSet.get(child.board().toString()).depth){
+                } else if (visitedSet.containsValue(child) && child.depth() < visitedSet.get(child.board().toString()).depth()) {
                     visitedSet.remove(child.board().toString());
-                }
-                else if(!frontier.contains(child) && !visitedSet.containsValue(child)){
-                    child.fWeight = child.depth + h2(child);
+                } else if (!frontier.contains(child) && !visitedSet.containsValue(child)) {
+                    child.setfWeight(child.depth() + h2(child));
                     frontier.add(child);
                     child.setParent(node);
                 }
             }
+
             counter++;
         }
 
@@ -501,11 +503,11 @@ public class EightPuzzle implements Puzzle {
 
         State goalNode = visitedSet.get("b 1 2 \n3 4 5 \n6 7 8 \n");
 
-        if(goalNode != null){
+        if (goalNode != null) {
             path = getPath(goalNode);
         }
 
-        System.out.println(path);
+        System.out.println(path + "numMoves: " + numMoves);
     }
 
     /*
@@ -514,6 +516,56 @@ public class EightPuzzle implements Puzzle {
     @Override
     public void solveBeam(int k) {
 
+        // list to keep track of the k best states
+        List<State> kBestStates = new ArrayList<>();
+
+        //start with some Node starting node
+        State startingNode = new State(state.board(), null, null);
+        startingNode.setfWeight(startingNode.depth() + h2(startingNode));
+        kBestStates.add(startingNode);
+        State goalNode = new State(new EightPuzzle(), null, null);
+
+        int counter = 0;
+
+        while (counter < maxNodes()) {
+
+            PriorityQueue<State> frontier = new PriorityQueue<>();
+
+            //for each state in kBestStates, we add its children to the frontier
+            for (State kthNode : kBestStates) {
+                //expand kth successors and gather cost info for every node, then put into frontier
+                for(State childNode: kthNode.neighbors()){
+                    childNode.setfWeight(childNode.depth() + h2(childNode));
+                    frontier.add(childNode);
+                }
+            }
+
+            //clear the kBestStates list
+            kBestStates.clear();
+
+            // add the childNodes from the frontier to the kBestStates and check if they are goal states
+            for (int i = 0; i < k && !frontier.isEmpty(); i++) {
+                kBestStates.add(frontier.poll());
+                //check if the state is a goal state
+                if (isGoalState(kBestStates.get(i))) {
+                    goalNode = kBestStates.get(i);
+                }
+            }
+
+
+            counter++;
+        }
+
+        if (counter >= maxNodes()){
+            throw new IllegalArgumentException();
+        }
+
+
+        //get the path to the goal state, if it exists, if not throw an exception
+
+        List<State> goalPath = getPath(goalNode);
+
+        System.out.println(goalPath);
     }
 }
 
