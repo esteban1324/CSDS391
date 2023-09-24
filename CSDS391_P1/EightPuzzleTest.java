@@ -294,15 +294,15 @@ class EightPuzzleTest {
                 {'4', 'b', '5'},
                 {'6', '7', '8'}});
 
-       // puzzle3.solveAStar("h1");
+        // puzzle3.solveAStar("h1");
 
         //test 4 A* for h2
         EightPuzzle puzzle4 = new EightPuzzle();
 
         puzzle4.setBoard(new char[][]{
-                {'b','2','3'},
-                {'7','5','1'},
-                {'4','6','8'}});
+                {'b', '2', '3'},
+                {'7', '5', '1'},
+                {'4', '6', '8'}});
 
 
         //“b23751468”
@@ -313,24 +313,79 @@ class EightPuzzleTest {
         //puzzle4.solveAStar("h1");
 
 
-
         //3254687b1
         EightPuzzle puzzle5 = new EightPuzzle();
 
 
         puzzle5.setBoard(new char[][]{
-                {'3','2','5'},
-                {'4','6','8'},
-                {'7','b','1'}
+                {'3', '2', '5'},
+                {'4', '6', '8'},
+                {'7', 'b', '1'}
 
         });
 
 
         puzzle5.solveAStar("h2");
-
-
-
     }
 
+    @org.junit.jupiter.api.Test
+    void testBeamSearch() {
+
+        EightPuzzle puzzle = new EightPuzzle();
+
+        //test 1: on goal state board
+        puzzle.setBoard(new char[][]{
+                {'b', '1', '2'},
+                {'3', '4', '5'},
+                {'6', '7', '8'}});
+
+        //puzzle.solveBeam(3);
+
+        //test 2: on board that requires 1 move
+        EightPuzzle puzzle2 = new EightPuzzle();
+
+        puzzle2.setBoard(new char[][]{
+                {'3', '1', '2'},
+                {'b', '4', '5'},
+                {'6', '7', '8'}});
+
+        // puzzle2.solveBeam(5);
+
+
+        //test 3: on board that requires 2 moves
+        EightPuzzle puzzle3 = new EightPuzzle();
+
+        puzzle3.setBoard(new char[][]{
+                {'3', '1', '2'},
+                {'4', 'b', '5'},
+                {'6', '7', '8'}});
+
+        // puzzle3.solveBeam(5);
+
+        //test 4: on board that requires more moves but is
+        //b34572168
+        EightPuzzle puzzle4 = new EightPuzzle();
+
+        puzzle4.setBoard(new char[][]{
+                {'b', '3', '4'},
+                {'5', '7', '2'},
+                {'1', '6', '8'}});
+
+
+       // puzzle4.maxNodes(10000);
+
+        puzzle4.solveBeam(5);
+
+
+        //test 5: solvable board that requires moves
+        EightPuzzle puzzle5 = new EightPuzzle();
+
+        puzzle5.setBoard(new char[][]{
+                {'1', '2', '3'},
+                {'4', 'b', '5'},
+                {'6', '7', '8'}});
+
+        //puzzle5.solveBeam(5);
+    }
 
 }

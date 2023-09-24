@@ -368,7 +368,7 @@ public class EightPuzzle implements Puzzle {
     }
 
     /* A* algo based on H1 heuristic */
-    private void solveAStarH1() {
+    private void solveAStarH1() throws IllegalStateException{
         //path will be a list of states that will be the path to the goal state
         //frontier will be a priority queue that will be sorted by f(n) value
         //visited will be a set of states that have been visited
@@ -459,7 +459,7 @@ public class EightPuzzle implements Puzzle {
 
 
     /* A* algo based on H2 heuristic */
-    private void solveAStarH2() {
+    private void solveAStarH2()throws IllegalStateException{
 
         List<State> path = new LinkedList<>();
         PriorityQueue<State> frontier = new PriorityQueue<>();
@@ -511,7 +511,7 @@ public class EightPuzzle implements Puzzle {
     }
 
     /*
-     * This is the eight-puzzle algorithm that will solve beam-search.
+     * This is the eight-puzzle algorithm that will solve local-beam-search.
      */
     @Override
     public void solveBeam(int k) {
@@ -519,11 +519,15 @@ public class EightPuzzle implements Puzzle {
         // list to keep track of the k best states
         List<State> kBestStates = new ArrayList<>();
 
-        //start with some Node starting node
+        //start with some starting node
         State startingNode = new State(state.board(), null, null);
         startingNode.setfWeight(startingNode.depth() + h2(startingNode));
         kBestStates.add(startingNode);
-        State goalNode = new State(new EightPuzzle(), null, null);
+
+        State goalNode = null;
+        Map<String, State> visited = new HashMap<>();
+        boolean goalFound = false;
+
 
         int counter = 0;
 
@@ -533,10 +537,15 @@ public class EightPuzzle implements Puzzle {
 
             //for each state in kBestStates, we add its children to the frontier
             for (State kthNode : kBestStates) {
+                //add all the k states to the set, avoids infinite loops
+                visited.put(kthNode.board().toString(), kthNode);
                 //expand kth successors and gather cost info for every node, then put into frontier
                 for(State childNode: kthNode.neighbors()){
-                    childNode.setfWeight(childNode.depth() + h2(childNode));
-                    frontier.add(childNode);
+                    if(!visited.containsValue(childNode)) {
+                        childNode.setfWeight(childNode.depth() + h2(childNode));
+                        childNode.setParent(kthNode);
+                        frontier.add(childNode);
+                    }
                 }
             }
 
@@ -546,23 +555,23 @@ public class EightPuzzle implements Puzzle {
             // add the childNodes from the frontier to the kBestStates and check if they are goal states
             for (int i = 0; i < k && !frontier.isEmpty(); i++) {
                 kBestStates.add(frontier.poll());
-                //check if the state is a goal state
                 if (isGoalState(kBestStates.get(i))) {
                     goalNode = kBestStates.get(i);
+                    goalFound = true;
                 }
             }
 
+            if (goalFound) break;
 
+            //increment counter to get to the max num of nodes
             counter++;
         }
 
         if (counter >= maxNodes()){
-            throw new IllegalArgumentException();
+            System.out.println("No solution found");
         }
 
-
         //get the path to the goal state, if it exists, if not throw an exception
-
         List<State> goalPath = getPath(goalNode);
 
         System.out.println(goalPath);
