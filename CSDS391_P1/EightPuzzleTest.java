@@ -2,17 +2,15 @@ package EightPuzzlePackage;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EightPuzzleTest {
+public class EightPuzzleTest {
 
-    @org.junit.jupiter.api.Test
-    void moveFunctionality() {
+    @Test
+    public void moveFunctionality() {
 
 
         // Create a new board
@@ -71,7 +69,7 @@ class EightPuzzleTest {
 
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setState() {
         //verify that we can set board to any random state,
         // and it can move from blank random state
@@ -98,7 +96,7 @@ class EightPuzzleTest {
         assertEquals("5 6 3 \n1 b 4 \n2 8 7 \n", board.toString());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void testNeighborStates() {
 
         //Set up a new board and state
@@ -121,8 +119,8 @@ class EightPuzzleTest {
         neighbors = state.neighbors();
     }
 
-    @org.junit.jupiter.api.Test
-    void testDepth() {
+    @Test
+    public void testDepth() {
         //set up a new board and state
         EightPuzzle board = new EightPuzzle();
 
@@ -160,8 +158,8 @@ class EightPuzzleTest {
     }
 
 
-    @org.junit.jupiter.api.Test
-    void testHeuristicCost() {
+    @Test
+    public void testHeuristicCost() {
 
         //test 1
         EightPuzzle puzzle = new EightPuzzle();
@@ -262,8 +260,8 @@ class EightPuzzleTest {
     }
 
 
-    @org.junit.jupiter.api.Test
-    void testAStar() {
+    @Test
+    public void testAStar() {
 
         //very simple case where it moves only one tile
         EightPuzzle eightPuzzle = new EightPuzzle();
@@ -328,8 +326,8 @@ class EightPuzzleTest {
         puzzle5.solveAStar("h2");
     }
 
-    @org.junit.jupiter.api.Test
-    void testBeamSearch() {
+    @Test
+    public void testBeamSearch() {
 
         EightPuzzle puzzle = new EightPuzzle();
 
@@ -372,20 +370,41 @@ class EightPuzzleTest {
                 {'1', '6', '8'}});
 
 
-       // puzzle4.maxNodes(10000);
+        // puzzle4.maxNodes(10000);
 
-        puzzle4.solveBeam(5);
+        // puzzle4.solveBeam(5);
 
 
         //test 5: solvable board that requires moves
         EightPuzzle puzzle5 = new EightPuzzle();
 
-        puzzle5.setBoard(new char[][]{
-                {'1', '2', '3'},
-                {'4', 'b', '5'},
-                {'6', '7', '8'}});
+        puzzle5.randomizeState(20);
 
-        //puzzle5.solveBeam(5);
+        puzzle5.printState();
+
+        puzzle5.solveBeam(5);
     }
+
+    @Test
+    public void testTiming() {
+
+
+        EightPuzzle ep1 = new EightPuzzle();
+        ep1.maxNodes(10000);
+        ep1.randomizeState(100);
+
+        long startTime = System.nanoTime();
+        ep1.solveAStar("h2");
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime) / 1_000_000;
+
+        System.out.println("Algorithm took " + duration + " milliseconds to run.");
+
+
+    }
+
+
+
 
 }

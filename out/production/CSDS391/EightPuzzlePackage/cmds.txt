@@ -8,3 +8,6 @@ printState
 solveAStar h1
 solveBeam 3
 maxNodes 10000
+
+
+

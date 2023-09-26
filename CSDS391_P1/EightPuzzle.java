@@ -1,6 +1,5 @@
 package EightPuzzlePackage;
 
-
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -368,7 +367,7 @@ public class EightPuzzle implements Puzzle {
     }
 
     /* A* algo based on H1 heuristic */
-    private void solveAStarH1() throws IllegalStateException{
+    private void solveAStarH1() throws IllegalStateException {
         //path will be a list of states that will be the path to the goal state
         //frontier will be a priority queue that will be sorted by f(n) value
         //visited will be a set of states that have been visited
@@ -381,6 +380,7 @@ public class EightPuzzle implements Puzzle {
         startingNode.setfWeight(startingNode.depth() + h1(startingNode));
         //add initial state to frontier
         frontier.add(startingNode);
+
 
         int counter = 0;
         //while frontier is not empty & counter is less than maxNodes
@@ -432,18 +432,20 @@ public class EightPuzzle implements Puzzle {
         }
 
         //print list of path.
-        System.out.println(path + "numMoves: " + numMoves);
+        System.out.println(path + "numMoves: " + numMoves + " counter: " + counter);
     }
 
     /* get path to goal state by backtracking and accessioning parent */
-    public List<State> getPath(State goalState) {
+    private List<State> getPath(State goalState) {
 
+        List<Direction> directionsToPath = new ArrayList<>();
         List<State> winningPath = new LinkedList<>();
         Stack<State> path = new Stack<>();
         State currState = goalState;
 
         //add the goal state to the stack and then access the parent
         while (currState != null) {
+            directionsToPath.add(currState.lastDirection());
             path.push(currState);
             currState = currState.parent();
             numMoves++;
@@ -454,12 +456,16 @@ public class EightPuzzle implements Puzzle {
             winningPath.add(path.pop());
         }
 
+        Collections.reverse(directionsToPath);
+
+        System.out.println(directionsToPath);
+
         return winningPath;
     }
 
 
     /* A* algo based on H2 heuristic */
-    private void solveAStarH2()throws IllegalStateException{
+    private void solveAStarH2() throws IllegalStateException {
 
         List<State> path = new LinkedList<>();
         PriorityQueue<State> frontier = new PriorityQueue<>();
@@ -507,7 +513,7 @@ public class EightPuzzle implements Puzzle {
             path = getPath(goalNode);
         }
 
-        System.out.println(path + "numMoves: " + numMoves);
+        System.out.println(path + "numMoves: " + numMoves + " counter: " + counter);
     }
 
     /*
@@ -519,9 +525,10 @@ public class EightPuzzle implements Puzzle {
         // list to keep track of the k best states
         List<State> kBestStates = new ArrayList<>();
 
+
         //start with some starting node
         State startingNode = new State(state.board(), null, null);
-        startingNode.setfWeight(startingNode.depth() + h2(startingNode));
+        startingNode.setfWeight(h2(startingNode));
         kBestStates.add(startingNode);
 
         State goalNode = null;
@@ -535,14 +542,16 @@ public class EightPuzzle implements Puzzle {
 
             PriorityQueue<State> frontier = new PriorityQueue<>();
 
+            if (goalFound) break;
+
             //for each state in kBestStates, we add its children to the frontier
             for (State kthNode : kBestStates) {
                 //add all the k states to the set, avoids infinite loops
                 visited.put(kthNode.board().toString(), kthNode);
                 //expand kth successors and gather cost info for every node, then put into frontier
-                for(State childNode: kthNode.neighbors()){
-                    if(!visited.containsValue(childNode)) {
-                        childNode.setfWeight(childNode.depth() + h2(childNode));
+                for (State childNode : kthNode.neighbors()) {
+                    if (!visited.containsValue(childNode)) {
+                        childNode.setfWeight(h2(childNode));
                         childNode.setParent(kthNode);
                         frontier.add(childNode);
                     }
@@ -561,20 +570,18 @@ public class EightPuzzle implements Puzzle {
                 }
             }
 
-            if (goalFound) break;
-
             //increment counter to get to the max num of nodes
             counter++;
         }
 
-        if (counter >= maxNodes()){
+        if (counter >= maxNodes()) {
             System.out.println("No solution found");
         }
 
         //get the path to the goal state, if it exists, if not throw an exception
         List<State> goalPath = getPath(goalNode);
 
-        System.out.println(goalPath);
+        System.out.println(goalPath + "numMoves: " + numMoves + " counter: " + counter);
     }
 }
 
