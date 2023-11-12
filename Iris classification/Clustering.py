@@ -18,23 +18,24 @@ class K_Means():
              
     # initialize the centroids within range of random data points k times
     def initialize_centroids(self)-> np.ndarray:   
-        random.seed(32)
+        random.seed(324)
            
         indices = np.random.choice(len(self.data), self.k, replace=False)
         
         centroids = self.data[indices]
                 
         return centroids
-         
+    
+
     def objective_function(self, cluster_assignment:np.ndarray, centroids:np.ndarray, data: np.ndarray) -> float:
         total_distance = 0
 
-   # For each data point, calculate the distance to its assigned centroid
-        for i in range(data.shape[0]):
+   
+        for i in range(self.data.shape[0]):
             k = cluster_assignment[i]
             distance = np.linalg.norm((data[i, 2:4] - centroids[k, 2:4]) ** 2, axis = 0)
        
-            # Add the squared distance to the total distance
+        
             total_distance += distance 
 
         return total_distance
@@ -45,7 +46,7 @@ class K_Means():
         
         cluster_assignment = np.zeros((data.shape[0], self.k), float)
         
-        for k in range(self.k):
+        for k in range(self.k): 
             distance = np.linalg.norm(data[:, 2:4] - centroids[k, 2:4], axis = 1)
             cluster_assignment[:, k] = distance 
                  
@@ -53,11 +54,11 @@ class K_Means():
         
         return cluster
     
-    # update the centroids
+    # updates the clusters by taking the clusters  
     def update_centroids(self, cluster_assignment:np.ndarray, data:np.ndarray) -> np.ndarray:
-            # update the centroids by taking the mean of the data points in each cluster
+           
             updated_centroids = np.zeros((self.k, data.shape[1]), float)
-            # take the mean of the data points in each cluster, only where the cluster assignment is equal to the centroid index to calc mean.
+           
             for k in range(self.k):
                 indices = np.where(cluster_assignment == k)
                 selected_data = data[indices]
@@ -66,81 +67,73 @@ class K_Means():
                 
             return updated_centroids
         
-    # kmeans algorithm, which is the main function
+    # kmeans algorithm, which is the main function, Q1 (a)
     def k_means(self):   
-        #step 1: initialize the centroids k times that are from the data points
-        centroids_list = self.centroids
-        
+    
+        centroids_list = self.initialize_centroids()
+        centroids_history = []
+
         for n in range(self.max_iter):    
             
-            # assign the clusters to the data points, based on the closest centroid
             # Randomly assign each observation to an initial cluster, from 1 to K. 
             clusters = self.assign_clusters(centroids_list, self.data)
-            # update the centroids
+          
             centroids_list = self.update_centroids(clusters, self.data)
-            # update the objective function
+            centroids_history.append(centroids_list)
+           
             self.inertia.append(self.objective_function(clusters, centroids_list, self.data))
                 
-        # step 5: return the centroids and cluster assignments
-        return centroids_list
+       
+        return centroids_list, centroids_history
     
+    #plot the objective function values Q1 (b)
     def plot_objective_function(self):
-        # plot the objective function values, make sure they minimize everytime
+        
         plt.plot(self.inertia)
         
         plt.xlabel("iteration")
         plt.ylabel("Sum of error")
         
         plt.show()
+       
+    # plot the learning algorithm, kmeans algorithm when centoids move and classify clusters,   Q1 (c)
+    def plot_learning_algorithm(self):
+        
+        centroids_list, centroids_history = self.k_means()
+             
+        unique_flower = {'setosa': 'red', 'versicolor': 'blue', 'virginica': 'green'}
+        
+        df = pd.read_csv("irisdata.csv")
+        
+        for i, centroids in enumerate(centroids_history):
+            plt.figure()
+            plt.scatter(self.data[:, 2], self.data[:, 3], color = [unique_flower[i] for i in df['species']])
+            plt.scatter(centroids[:, 2], centroids[:, 3], color = 'orange', marker = 'x')
+            plt.title("Iteration: " + str(i))
+            plt.xlabel("Petal Length")
+            plt.ylabel("Petal Width")
+            plt.show()
         
         
         
-    #plot the data points and centroids
-    def plot_data_points(self):     
-        # plot the based on different colors, flower type  
-        unique_flower = {'setosa': 'red', 'versicolor': '#006BA4', 'virginica': 'm'}
+    # To be continued: decision boundaries Q1 (d)
+    
+
+
+
         
-        # plot the data points
-        for data_point in self.data:
-            plt.scatter(data_point[2], data_point[3], color = unique_flower[data_point[4]])
-        
-        # plot the centroids
-        for centroid in self.centroids:
-            plt.scatter(centroid[2], centroid[3], color = 'black', marker = 'x')
-        
-        # label the graph
-        plt.xlabel('Petal Length')
-        plt.ylabel('Petal Width')
-        plt.title('Iris Data')
-            
-        plt.show()
-        
-              
+iris = pd.read_csv("irisdata.csv")
+
+features = ['sepal_length','sepal_width','petal_length', 'petal_width']
+
+data_vector = iris[features].values      
+                     
 if __name__ == "__main__":
     
+    x = K_Means(2, data_vector, 8)
+     
+    x.plot_learning_algorithm()
     
-    
-    x = K_Means(2, data, 60)
-    
-    x.plot_objective_function()
-    
-    
-      
-    '''
-    iris = pd.read_csv("irisdata.csv")
-
-    features = ['sepal_length','sepal_width','petal_length', 'petal_width']
-
-    data_vector = iris[features].values
-    
-    x = K_Means(2, data_vector, 70)
-    
-    
-    x.k_means()
-    
-    
-    x.plot_objective_function()
-    '''
     
     
     
