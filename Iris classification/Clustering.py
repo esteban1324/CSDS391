@@ -6,6 +6,14 @@ import math
 import csv 
 import pandas as pd
 
+
+iris = pd.read_csv("irisdata.csv")
+
+
+features = ['sepal_length','sepal_width','petal_length', 'petal_width']
+
+data_vector = iris[features].values 
+
 """ This is the main class for K means clustering for all the data points. This is for Question 1. (a-d) """
 class K_Means():
     
@@ -15,6 +23,7 @@ class K_Means():
         self.max_iter = max_iter
         self.centroids = []
         self.inertia = []
+        self.tup, self.centroids_history = self.k_means()
              
     # initialize the centroids within range of random data points k times
     def initialize_centroids(self)-> np.ndarray:   
@@ -30,12 +39,10 @@ class K_Means():
     def objective_function(self, cluster_assignment:np.ndarray, centroids:np.ndarray, data: np.ndarray) -> float:
         total_distance = 0
 
-   
         for i in range(self.data.shape[0]):
             k = cluster_assignment[i]
             distance = np.linalg.norm((data[i, 2:4] - centroids[k, 2:4]) ** 2, axis = 0)
        
-        
             total_distance += distance 
 
         return total_distance
@@ -116,15 +123,15 @@ class K_Means():
     # plot the learning algorithm, kmeans algorithm when centoids move and classify clusters,   Q1 (c)
     def plot_learning_algorithm(self):
         
-        centroids_list, centroids_history = self.k_means()
+        #centroids_list, centroids_history = self.k_means()
              
-        unique_flower = {'setosa': 'red', 'versicolor': 'blue', 'virginica': 'green'}
+        species = {'setosa': 'red', 'versicolor':'blue', 'virginica': 'green'}
+        colors = [species[s] for s in iris['species']]       
         
-        df = pd.read_csv("irisdata.csv")
         
-        for i, centroids in enumerate(centroids_history):
+        for i, centroids in enumerate(self.centroids_history):
             plt.figure()
-            plt.scatter(self.data[:, 2], self.data[:, 3], color = [unique_flower[i] for i in df['species']])
+            plt.scatter(self.data[:, 2], self.data[:, 3], color = colors)
             plt.scatter(centroids[:, 2], centroids[:, 3], color = 'black', marker = 'x')
             plt.title("K means Clustering, Iteration: " + str(i))
             plt.xlabel("Petal Length")
@@ -135,24 +142,21 @@ class K_Means():
     # To be continued: decision boundaries Q1 (d)
     def plot_decision_boundary(self):
         # for k = 2, take the cordinates and get the midpoint of them and plot them along a line with form of y = m(x+a) + b.  
-         
-        centroids_list, centroids_history = self.k_means()
-        
-         
+             
         plt.title("Decision Boundary")
         plt.xlabel("Petal Length")
         plt.ylabel("Petal Width")
         
-        unique_flower = {'setosa': 'red', 'versicolor': 'blue', 'virginica': 'green'}
+        x, y = zip(*self.centroids)
         
-        df = pd.read_csv("irisdata.csv")
-        
-        
-        x, y = zip(self.centroids)
         plt.scatter(x, y, color = 'black', marker = 'x')
+        
+        species = {'setosa': 'red', 'versicolor':'blue', 'virginica': 'green'}
+        colors = [species[s] for s in iris['species']]        
+        
  
-        plt.scatter(self.data[:, 2], self.data[:, 3], color =  [unique_flower[i] for i in df['species']])
-       
+        plt.scatter(self.data[:, 2], self.data[:, 3], c= colors)
+
         plt.show()
         
         if(len(self.centroids) == 2):
@@ -177,7 +181,7 @@ class K_Means():
             
             
             
-            plt.close('all')
+          
                  
            
        
@@ -195,24 +199,17 @@ class K_Means():
 
 
         
-iris = pd.read_csv("irisdata.csv")
-
-features = ['sepal_length','sepal_width','petal_length', 'petal_width']
-
-data_vector = iris[features].values      
-                     
+     
+# add the species to the data vector                 
 if __name__ == "__main__":
     
     x = K_Means(2, data_vector, 8)
     
-    
     #print(x.centroids)
      
-    x.plot_decision_boundary()
-    
-    
-     
-    #x.plot_learning_algorithm()
+    #x.plot_decision_boundary()
+
+    x.plot_learning_algorithm()
     
     
     
