@@ -100,7 +100,7 @@ class K_Means():
         return centroids_list, centroids_history
     
     # we are getting the last centroids in order to plot the decision boundaries.   
-    def get_last_centroids(self, centroids_history):
+    def get_last_centroids(self, centroids_history:list):
         
         last_centroids = centroids_history[-1:]
         for array in last_centroids:
@@ -203,13 +203,13 @@ class K_Means():
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(2, data_vector, 8)
+    x = K_Means(3, data_vector, 8)
     
     #print(x.centroids)
      
     #x.plot_decision_boundary()
 
-    x.plot_learning_algorithm()
+    #x.plot_learning_algorithm()
     
     
     
