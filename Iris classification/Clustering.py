@@ -190,9 +190,6 @@ def decision_boundary_3(centroids):
     plt.plot(x_values, y_values2, color="green")
 
 
-
-        
-     
 # add the species to the data vector                 
 if __name__ == "__main__":
     
