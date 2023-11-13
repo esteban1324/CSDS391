@@ -2,8 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import math
-import csv 
 import pandas as pd
 
 
@@ -167,7 +165,7 @@ def decision_boundary_2(centroids):
     x2, y2 = centroids[1]
     midpoint = [(x1 + x2) / 2, (y1 + y2) / 2]
     slope = -1 * (y2 - y1) / (x2 - x1)
-    x_values = range(0, 8)
+    x_values = np.arange(0, 8)
     y_intercept = midpoint[1] - (slope * midpoint[0])
     y_values = slope * x_values + y_intercept
     plt.plot(x_values, y_values, color="green")
@@ -182,7 +180,9 @@ def decision_boundary_3(centroids):
     slope2 = -1 * (y3 - y2) / (x3 - x2)
     y_intercept1 = midpoint1[1] - (slope1 * midpoint1[0])
     y_intercept2 = midpoint2[1] - (slope2 * midpoint2[0])
-    x_values = range(0, 8)
+    
+    x_values = np.arange(0, 8)
+    
     y_values1 = slope1 * x_values + y_intercept1
     y_values2 = slope2 * x_values + y_intercept2
     plt.ylim(0, 3.5)
@@ -193,7 +193,7 @@ def decision_boundary_3(centroids):
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(2, data_vector, 8)
+    x = K_Means(3, data_vector, 8)
     
     #print(x.centroids)
      
