@@ -7,8 +7,7 @@ import csv
 import pandas as pd
 
 
-iris = pd.read_csv("irisdata.csv")
-
+iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width']
 
@@ -23,7 +22,7 @@ class K_Means():
         self.max_iter = max_iter
         self.centroids = []
         self.inertia = []
-        self.tup, self.centroids_history = self.k_means()
+        self.centroids_history = self.k_means()
              
     # initialize the centroids within range of random data points k times
     def initialize_centroids(self)-> np.ndarray:   
@@ -97,7 +96,7 @@ class K_Means():
         # collect points for decision boundaries, adds to centroid list. 
         self.get_last_centroids(centroids_history)
    
-        return centroids_list, centroids_history
+        return centroids_history
     
     # we are getting the last centroids in order to plot the decision boundaries.   
     def get_last_centroids(self, centroids_history:list):
@@ -143,58 +142,52 @@ class K_Means():
     def plot_decision_boundary(self):
         # for k = 2, take the cordinates and get the midpoint of them and plot them along a line with form of y = m(x+a) + b.  
              
-        plt.title("Decision Boundary")
+        plt.title("Decision Boundary for " + str(self.k) +  " Clusters")
         plt.xlabel("Petal Length")
         plt.ylabel("Petal Width")
         
         x, y = zip(*self.centroids)
-        
-        plt.scatter(x, y, color = 'black', marker = 'x')
-        
+             
         species = {'setosa': 'red', 'versicolor':'blue', 'virginica': 'green'}
         colors = [species[s] for s in iris['species']]        
         
- 
-        plt.scatter(self.data[:, 2], self.data[:, 3], c= colors)
-
-        plt.show()
+        plt.scatter(self.data[:, 2], self.data[:, 3], c = colors)
+        plt.scatter(x, y, color = 'black', marker = '^')
         
         if(len(self.centroids) == 2):
-            x1 = self.centroids[0][0]
-            y1 = self.centroids[0][1]
-            
-            x2 = self.centroids[1][0]
-            y2 = self.centroids[1][1]
-            
-            coordinates = [(x1 + x2)/2, (y1 + y2)/2]
-            
-            # get slope of line of the midpoint
-            m = (y2 - y1)/(x2 - x1) 
-            
-            # get the y intercept of the line
-            b = coordinates[1] - m * coordinates[0]
-            
-            # plot the line y=mx+b 
-            y = -m * coordinates[0] + b
-            
-            
-            
-            
-            
-          
-                 
-           
-       
-        
-             
-        
+           decision_boundary_2(self.centroids)
 
-    
-        # if(len(centroids) == 3):
-            # plot likelihood      
-    
-    
-        
+        # plot using two midpoints and two lines
+        if(len(self.centroids) == 3):
+            decision_boundary_3(self.centroids)             
+        plt.show()
+      
+def decision_boundary_2(centroids):
+    x1, y1 = centroids[0]
+    x2, y2 = centroids[1]
+    midpoint = [(x1 + x2) / 2, (y1 + y2) / 2]
+    slope = -1 * (y2 - y1) / (x2 - x1)
+    x_values = range(0, 8)
+    y_intercept = midpoint[1] - (slope * midpoint[0])
+    y_values = slope * x_values + y_intercept
+    plt.plot(x_values, y_values, color="green")
+
+def decision_boundary_3(centroids):
+    x1, y1 = centroids[0]
+    x2, y2 = centroids[1]
+    x3, y3 = centroids[2]
+    midpoint1 = [(x1 + x2) / 2, (y1 + y2) / 2]
+    midpoint2 = [(x2 + x3) / 2, (y2 + y3) / 2]
+    slope1 = -1 * (y2 - y1) / (x2 - x1)
+    slope2 = -1 * (y3 - y2) / (x3 - x2)
+    y_intercept1 = midpoint1[1] - (slope1 * midpoint1[0])
+    y_intercept2 = midpoint2[1] - (slope2 * midpoint2[0])
+    x_values = range(0, 8)
+    y_values1 = slope1 * x_values + y_intercept1
+    y_values2 = slope2 * x_values + y_intercept2
+    plt.ylim(0, 3.5)
+    plt.plot(x_values, y_values1, color="green")
+    plt.plot(x_values, y_values2, color="green")
 
 
 
@@ -203,11 +196,11 @@ class K_Means():
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(3, data_vector, 8)
+    x = K_Means(2, data_vector, 8)
     
     #print(x.centroids)
      
-    #x.plot_decision_boundary()
+    x.plot_decision_boundary()
 
     #x.plot_learning_algorithm()
     
