@@ -5,7 +5,7 @@ import random
 import pandas as pd
 
 
-iris = pd.read_csv("irisdata.csv")
+iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width']
 
@@ -195,9 +195,9 @@ if __name__ == "__main__":
     
     #print(x.centroids)
      
-    x.plot_decision_boundary()
+    #x.plot_decision_boundary()
 
-    #x.plot_learning_algorithm()
+    x.plot_learning_algorithm()
     
     
     

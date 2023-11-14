@@ -1,17 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import math
-import csv 
+import math 
+import random 
 import pandas as pd
 
 
 # this module will be used to plot the decision boundary for Q2. (a) - (e)
  
 #load the data
-iris = pd.read_csv("irisdata.csv")
+iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
 
-features = ['sepal_length','sepal_width','petal_length', 'petal_width']
+features = ['sepal_length','sepal_width','petal_length', 'petal_width', 'species']
 
 species = ['species']   
 types = iris[species].values
@@ -20,7 +20,7 @@ data_vector = iris[features].values
 
 class Perceptron():
     
-    def __init__(self, data:np.ndarray, weight: int, bias: int):
+    def __init__(self, data:np.ndarray, weight, bias):
         self.data = data
         self.weight = weight
         self.bias = bias
@@ -48,11 +48,11 @@ class Perceptron():
         return 1 / (1 + np.exp(-x))
     
     # function that plots the decision boundary for the perceptron (2c)
-    def plot_decision_boundary(self):
+    def plot_decision_boundary(self, weight, bias, point):
         
         # plot the decision boundary
         x_range = np.arange(2.5, 6.7, 0.1)
-        y_range = - (self.weight[0] * x_range) + self.bias
+        y_range = - (weight * x_range) + bias
        
         plt.plot(x_range, y_range, color = 'black')
         
@@ -61,21 +61,77 @@ class Perceptron():
         
         plt.title("Decision Boundary for Non Linearity")
         plt.show()
+    
+        # sigmoid funit
+        return 1.0 - self.sigmoid(weight * point[0] - point[1] + bias)
+    
+    # function that plots a surface plot of the output of the perceptron (2d)
+    def plot_output(self, data:np.ndarray, weight, bias):
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection = '3d')
         
         
-         
-       
+        process_data = self.pre_process(data)
+        
+        x_values = np.linspace(process_data[:, 2].min(), process_data[:, 2].max(), 100)
+        y_values = np.linspace(process_data[:, 3].min(), process_data[:, 3].max(), 100)
+            
+        x, y = np.meshgrid(x_values, y_values)
+
+        # Compute the perceptron output for each point in the meshgrid
+        z = self.sigmoid(weight * x - y + bias)
+        
+        x_flat = x.flatten()
+        y_flat = y.flatten()
+        z_flat = z.flatten()
+          
+        # Plot the surface
+        ax.scatter(x_flat, y_flat, z_flat, color='green', marker='o')
+        
+        #ax.plot(x_flat, y_flat, z_flat, color='black')
         
         
-   
+        
+                                          
+        # plot only the versicolor and virginica classes                                 
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        #ax.set_zlabel('z')
+        ax.set_title('Surface Plot of Output of Perceptron')
+           
+        plt.show()
+ 
+        
+    # only get the versicolor and virginica classes and return a new data vector
+    def pre_process(self, data):
+        
+        process_data = []
+        
+        for i in range(data.shape[0]):
+            if types[i] == 'versicolor' or types[i] == 'virginica':
+                process_data.append(data[i])
+        
+        return np.array(process_data)
+      
+           
 if __name__ == '__main__':
     
-    # initialize the weight and bias
-    weight = [.5, 1]
-    bias = 4.25
-    
+    # initialize the weight and bias and point on graph.
+    weight = .47
+    bias = 4.10
+    point = [5.4, 1.3]
     
     x = Perceptron(data_vector, weight, bias)
     
-    x.plot_decision_boundary()
+    # 2b 
+    #print(x.sigmoid(weight * point[0] - point[1] + bias))
+    
+    # 2c
+    #print(x.plot_decision_boundary(weight, bias, point))
+    
+    # 2d     
+   # x.plot_output(data_vector, -.47, bias)
+    
+    # 2d 
+    
  
