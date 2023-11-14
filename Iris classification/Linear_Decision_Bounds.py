@@ -112,6 +112,15 @@ class Perceptron():
                 process_data.append(data[i])
         
         return np.array(process_data)
+    
+    
+    def print_output(self,data, weight, bias):
+        
+        process_data = self.pre_process(data)
+        
+        for i in range(process_data.shape[0]):    
+            print(process_data[i, :])
+            print(self.sigmoid(weight * process_data[i, 2] - process_data[i, 3] + bias))
       
            
 if __name__ == '__main__':
@@ -132,6 +141,7 @@ if __name__ == '__main__':
     # 2d     
    # x.plot_output(data_vector, -.47, bias)
     
-    # 2d 
+    # 2e 
+    x.print_output(data_vector, -.6, 4.8)
     
  
