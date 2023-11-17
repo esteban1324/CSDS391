@@ -12,7 +12,7 @@ features = ['sepal_length','sepal_width','petal_length', 'petal_width']
 data_vector = iris[features].values 
 
 """ This is the main class for K means clustering for all the data points. This is for Question 1. (a-d) """
-class K_Means():
+class K_Means:
     
     def __init__(self, k:int, data:np.ndarray, max_iter:int):
         self.k = k  
@@ -153,51 +153,51 @@ class K_Means():
         plt.scatter(x, y, color = 'black', marker = '^')
         
         if(len(self.centroids) == 2):
-           decision_boundary_2(self.centroids)
+           self.decision_boundary_2(self.centroids)
 
         # plot using two midpoints and two lines
         if(len(self.centroids) == 3):
-            decision_boundary_3(self.centroids)             
+            self.decision_boundary_3(self.centroids)             
         plt.show()
       
-def decision_boundary_2(centroids):
-    x1, y1 = centroids[0]
-    x2, y2 = centroids[1]
-    midpoint = [(x1 + x2) / 2, (y1 + y2) / 2]
-    slope = -1 * (y2 - y1) / (x2 - x1)
-    x_values = np.arange(0, 8)
-    y_intercept = midpoint[1] - (slope * midpoint[0])
-    y_values = slope * x_values + y_intercept
-    plt.plot(x_values, y_values, color="black")
+    def decision_boundary_2(self, centroids):
+        x1, y1 = centroids[0]
+        x2, y2 = centroids[1]
+        midpoint = [(x1 + x2) / 2, (y1 + y2) / 2]
+        slope = -1 * (y2 - y1) / (x2 - x1)
+        x_values = np.arange(0, 8)
+        y_intercept = midpoint[1] - (slope * midpoint[0])
+        y_values = slope * x_values + y_intercept
+        plt.plot(x_values, y_values, color="black")
 
-def decision_boundary_3(centroids):
-    x1, y1 = centroids[0]
-    x2, y2 = centroids[1]
-    x3, y3 = centroids[2]
-    midpoint1 = [(x1 + x2) / 2, (y1 + y2) / 2]
-    midpoint2 = [(x2 + x3) / 2, (y2 + y3) / 2]
-    slope1 = -1 * (y2 - y1) / (x2 - x1)
-    slope2 = -1 * (y3 - y2) / (x3 - x2)
-    y_intercept1 = midpoint1[1] - (slope1 * midpoint1[0])
-    y_intercept2 = midpoint2[1] - (slope2 * midpoint2[0])
-    x_values = np.arange(0, 8)
-    y_values1 = slope1 * x_values + y_intercept1
-    y_values2 = slope2 * x_values + y_intercept2
-    plt.ylim(0, 4.0)
-    plt.plot(x_values, y_values1, color="black")
-    plt.plot(x_values, y_values2, color="black")
+    def decision_boundary_3(self, centroids):
+        x1, y1 = centroids[0]
+        x2, y2 = centroids[1]
+        x3, y3 = centroids[2]
+        midpoint1 = [(x1 + x2) / 2, (y1 + y2) / 2]
+        midpoint2 = [(x2 + x3) / 2, (y2 + y3) / 2]
+        slope1 = -1 * (y2 - y1) / (x2 - x1)
+        slope2 = -1 * (y3 - y2) / (x3 - x2)
+        y_intercept1 = midpoint1[1] - (slope1 * midpoint1[0])
+        y_intercept2 = midpoint2[1] - (slope2 * midpoint2[0])
+        x_values = np.arange(0, 8)
+        y_values1 = slope1 * x_values + y_intercept1
+        y_values2 = slope2 * x_values + y_intercept2
+        plt.ylim(0, 4.0)
+        plt.plot(x_values, y_values1, color="black")
+        plt.plot(x_values, y_values2, color="black")
 
 
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(2, data_vector, 8)
+    x = K_Means(3, data_vector, 11)
     
     #print(x.centroids)
      
     #x.plot_decision_boundary()
 
-    x.plot_learning_algorithm()
+    #x.plot_learning_algorithm()
     
     
     
