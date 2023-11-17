@@ -6,7 +6,7 @@ import random
 import pandas as pd
 
 
-iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
+iris = pd.read_csv("irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width', 'species']
 
@@ -15,15 +15,17 @@ types = iris[species].values
 
 data_vector = iris[features].values
 
+flower = iris.drop(iris[iris.species == 'setosa'].index)[species].values
 
 # only get the versicolor and virginica classes and return a new data vector
 def pre_process(data):
     process_data = []
-        
+    
+    counter = 0
     for i in range(data.shape[0]):
         if types[i] == 'versicolor' or types[i] == 'virginica':
             process_data.append(data[i])
-        
+            counter+=1
     return np.array(process_data)
 
          
@@ -46,7 +48,7 @@ def plot_classes():
     plt.xlabel('petal_length')
     plt.ylabel('petal_width')
 
-    #function that computes output of a simple perceptron using the sigmoid function (2b)  
+#function that computes output of a simple perceptron using the sigmoid function (2b)  
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
     
@@ -113,30 +115,24 @@ class NueralNetwork:
     # function that calculates mean squared error (MSE) (3a)
     def mse(self):
         pre_process_data = pre_process(self.data)
-         
+        
         error = 0
         
         for i in range(pre_process_data.shape[0]):    
             x1 = pre_process_data[i, 2]
             x2 = pre_process_data[i, 3]
   
-            prediction = self.classifier(i)
-            z = sigmoid(weight[0] * x1 + x2 * weight[1] + self.bias)
-           
-            error += (z - prediction) ** 2
+            prediction = 0 if flower[i] == 'versicolor' else 1
             
+            z = sigmoid(self.weight[0] * x1 + x2 * self.weight[1] + self.bias)
+            
+            error += math.pow(z - prediction, 2)
         
-        mean_error = error / pre_process_data.shape[0] 
-        
-        
+             
+        mean_error = error / pre_process_data.shape[0]
+           
         return mean_error
     
-    # helper function that predicts the class 
-    def classifier(self, i):
-        if (types[i] == 'versicolor'):
-            return 1
-        else:
-            return 0
     
     # function that computes the mse for two different decision boundaries, plots boundary (3b)
     def plot_mse(self, weight):
@@ -148,13 +144,9 @@ class NueralNetwork:
         y_range = slope * x_range + y_intercept
         
         plt.plot(x_range, y_range, color = 'black')
-       
-       
+              
         plot_2nd_3rd_classes()
         
-        plt.title("Decision Boundary for Non Linearity")
-        
-     
         return self.mse()
     
     # function that computes summed gradient for an ensamble of paterns, plot this (3e)
@@ -192,9 +184,13 @@ if __name__ == '__main__':
     # 3a
     # define nonlinear functions weights -> [w0, w1, w2] x1 is petal length x2 is petal width.
     # initial weight (w0) is the bias
-    bias3 = -45 
-    weight3 = [6, 10]
     
+    bias3 = -52
+    weight3 = [7, 11]
+    
+    #bias32 = -31
+    #weight32 = [2, 13]
+      
     #print(NueralNetwork(data_vector, weight3, bias3).mse())
     
     # 3b 

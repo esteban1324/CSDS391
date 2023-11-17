@@ -5,7 +5,7 @@ import random
 import pandas as pd
 
 
-iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
+iris = pd.read_csv("irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width']
 
