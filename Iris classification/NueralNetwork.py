@@ -21,11 +21,11 @@ flower = iris.drop(iris[iris.species == 'setosa'].index)[species].values
 def pre_process(data):
     process_data = []
     
-    counter = 0
+    
     for i in range(data.shape[0]):
         if types[i] == 'versicolor' or types[i] == 'virginica':
             process_data.append(data[i])
-            counter+=1
+            
     return np.array(process_data)
 
          
@@ -51,6 +51,9 @@ def plot_classes():
 #function that computes output of a simple perceptron using the sigmoid function (2b)  
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
+
+def sigmoid_prime(x):
+    return (np.exp(-x) / math.pow(1 + np.exp(-x), 2))
     
 # function that plots the decision boundary for the perceptron (2c)
 def plot_decision_boundary(weight, bias, point):        
@@ -61,7 +64,7 @@ def plot_decision_boundary(weight, bias, point):
         
     plt.plot(x_range, y_range, color = 'black')
         
-        # plot the versicolor and virginica classes
+    #plot the versicolor and virginica classes
     plot_classes()
         
     plt.title("Decision Boundary for Non Linearity")
@@ -124,7 +127,7 @@ class NueralNetwork:
   
             prediction = 0 if flower[i] == 'versicolor' else 1
             
-            z = sigmoid(self.weight[0] * x1 + x2 * self.weight[1] + self.bias)
+            z = sigmoid(self.weight[0] * x1 +  self.weight[1] * x2  + self.bias)
             
             error += math.pow(z - prediction, 2)
         
@@ -139,9 +142,7 @@ class NueralNetwork:
               
         x_range = np.arange(2.5, 6.7, 0.1)
         
-        slope = -(weight[0] / weight[1])
-        y_intercept = -(self.bias / weight[1])
-        y_range = slope * x_range + y_intercept
+        y_range = self.get_line(weight, self.bias)
         
         plt.plot(x_range, y_range, color = 'black')
               
@@ -149,12 +150,87 @@ class NueralNetwork:
         
         return self.mse()
     
-    # function that computes summed gradient for an ensamble of paterns, plot this (3e)
+    # the line for the decision boundary
+    def get_line(self, weight, bias):
+        slope = -(weight[0] / weight[1])
+        y_intercept = -(bias / weight[1])
+        x_range = np.arange(2.5, 6.7, 0.1)
+        y_range = slope * x_range + y_intercept
+        
+        return y_range
+         
+    # function that computes summed gradient for an ensamble of paterns, use formula derived from 3c-d
+    def summed_gradient(self):
+        pre_process_data = pre_process(self.data)
+       
+        gradient_w0 = 0
+        gradient_w1 = 0
+        gradient_w2 = 0
+
+        for i in range(pre_process_data.shape[0]):
+
+            x1 = pre_process_data[i, 2]
+            x2 = pre_process_data[i, 3]
+            
+            prediction = 0 if flower[i] == 'versicolor' else 1
+            z = self.bias + self.weight[0] * x1 + self.weight[1] * x2
+            actual = sigmoid(z)
+            
+            gradient_w0 += 2 * (prediction - actual) * (-sigmoid_prime(z))
+            gradient_w1 += 2 * (prediction - actual) * (-sigmoid_prime(z)) * (x1)
+            gradient_w2 +=  2 * (prediction - actual) * (-sigmoid_prime(z)) * (x2)
+        
+        # take all the gradients and get the mean of each. 
+        gradient_w0 /= pre_process_data.shape[0]
+        gradient_w1 /= pre_process_data.shape[0]
+        gradient_w2 /= pre_process_data.shape[0]
     
+        return (gradient_w0, gradient_w1, gradient_w2)
 
+    # plot the gradient summation 
+    def plot_gradient(self):
+        
+        #get the tuple from summed_gradient and plot the line of this.
+        gradient = self.summed_gradient()
+        
+        # plot the decision boundary
+        x_range = np.arange(2.5, 6.7, 0.1)
+        
+        
+        
+        plot_2nd_3rd_classes()
+        
+    '''Learning through optmization''' 
+    #gradient decent 4a 
+    def gradient_decent(self, bound):
+        
+        step_size = 0.1
+        iterations = 0
+        
+        # while the mean squared error is greater than the bound, keep updating the weights and bias
+        while(self.mse() > bound):
+            gradient = self.summed_gradient()
 
-
-
+            self.bias -= step_size * gradient[0]
+            self.weight[0] -= step_size * gradient[1]
+            self.weight[1] -= step_size * gradient[2]
+            
+            # put the mse in the list to plot it being minimized
+            
+                
+            iterations += 1
+        
+        
+        return [self.bias, self.weight[0], self.weight[1]]
+    
+    #plot gradient decent 4b 
+    
+    
+    
+    #randomize weights 4c 
+        
+        
+        
 
 
 
@@ -194,7 +270,11 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight3, bias3).mse())
     
     # 3b 
-    print(NueralNetwork(data_vector, weight3, bias3).plot_mse(weight3))
+    #print(NueralNetwork(data_vector, weight3, bias3).plot_mse(weight3))
+    
+    # 3e
+    print(NueralNetwork(data_vector, weight3, bias3).plot_gradient())
+    
      
     
     
