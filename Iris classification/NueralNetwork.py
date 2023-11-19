@@ -21,7 +21,6 @@ flower = iris.drop(iris[iris.species == 'setosa'].index)[species].values
 def pre_process(data):
     process_data = []
     
-    
     for i in range(data.shape[0]):
         if types[i] == 'versicolor' or types[i] == 'virginica':
             process_data.append(data[i])
@@ -216,14 +215,13 @@ class NueralNetwork:
     
     
     #gradient decent 4a 
-    def gradient_decent(self, step_size):
+    def gradient_decent(self, step_size, k):
               
         iterations = 0
         threshold = 0.01
-        
-        
+               
        # this algorithm tries to minimize the mean squared error by updating the weights and bias with the gradient decreasing the error.
-        while(iterations < 1000):
+        while(iterations < k):
             gradient = self.summed_gradient()
 
             self.bias -= step_size * gradient[0]
@@ -245,9 +243,9 @@ class NueralNetwork:
         return [self.bias, self.weight[0], self.weight[1]]
     
     #plot gradient decent 4b, plot the initial and final location of the weight and bias.   
-    def plot_learning_curve(self, step_size):
+    def plot_learning_curve(self, step_size, k):
         #plot the learning curve of the gradient decent, plot the objective function as a function of the number of iterations
-        weight = self.gradient_decent(step_size)
+        weight = self.gradient_decent(step_size , k)
         
         plt.plot(self.learning_curve)
              
@@ -257,12 +255,17 @@ class NueralNetwork:
         plt.show()
     
     #plot the initial and final location of the weight and bias.
-    def plot_gradient_decent(self, step_size):
+    def plot_gradient_decent(self, step_size, k):
+        # initial line "magenta line"
         x_range = np.arange(2.5, 6.7, 0.1)
         y_range = self.get_line(self.weight, self.bias)
         plt.plot(x_range, y_range, color = 'magenta')
         
-        self.gradient_decent(step_size)
+        self.gradient_decent(step_size , k)
+        print("weights", self.weight)
+        print("bias", self.bias)
+        
+        # final line "red line"
         new_yrange = self.get_line(self.weight, self.bias)
         plt.plot(x_range, new_yrange, color = 'red') 
         plot_2nd_3rd_classes()
@@ -277,7 +280,7 @@ class NueralNetwork:
         weight1 = random.uniform(-3, 1)
         weight2 = random.uniform(-2, 2)
         
-        return [bias, weight1, weight2]
+        return bias, [weight1, weight2]
     
 if __name__ == '__main__':
     
@@ -325,14 +328,15 @@ if __name__ == '__main__':
     weight4 = [7, 12]
     
     
-    #print(NueralNetwork(data_vector, weight3, bias3).gradient_decent(.2))
+    #print(NueralNetwork(data_vector, weight3, bias3).gradient_decent(.2, 1000))
     
     # 4b
     #print(NueralNetwork(data_vector, weight4, bias4).plot_learning_curve(-.1))
-    #print(NueralNetwork(data_vector, weight4, bias4).plot_gradient_decent(-.2))
+    #print(NueralNetwork(data_vector, weight4, bias4).plot_gradient_decent(-.2, 1000))
     
     # 4c random weights 
-    
+    random_weights = NueralNetwork(data_vector, weight4, bias4).radomize_weights(bias4, weight4[0], weight4[1])
+    #print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_gradient_decent(-.2, 1000))
     
     
     
