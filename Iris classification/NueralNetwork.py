@@ -113,6 +113,8 @@ class NueralNetwork:
         self.data = data
         self.weight = weight
         self.bias = bias
+        self.learning_curve = []
+        self.iterations = 0 
     
     
     # function that calculates mean squared error (MSE) (3a)
@@ -176,9 +178,9 @@ class NueralNetwork:
             z = self.bias + self.weight[0] * x1 + self.weight[1] * x2
             actual = sigmoid(z)
             
-            gradient_w0 += 2 * (prediction - actual) * (-sigmoid_prime(z))
-            gradient_w1 += 2 * (prediction - actual) * (-sigmoid_prime(z)) * (x1)
-            gradient_w2 +=  2 * (prediction - actual) * (-sigmoid_prime(z)) * (x2)
+            gradient_w0 -= 2 * (prediction - actual) * (-sigmoid_prime(z))
+            gradient_w1 -= 2 * (prediction - actual) * (-sigmoid_prime(z)) * (x1)
+            gradient_w2 -=  2 * (prediction - actual) * (-sigmoid_prime(z)) * (x2)
         
         # take all the gradients and get the mean of each. 
         gradient_w0 /= pre_process_data.shape[0]
@@ -211,35 +213,66 @@ class NueralNetwork:
         plot_2nd_3rd_classes()
         
     '''Learning through optmization''' 
+    
+    
     #gradient decent 4a 
-    def gradient_decent(self, bound, mse_list, step_size):
-        
-        
+    def gradient_decent(self, step_size):
+              
         iterations = 0
+        threshold = 0.01
         
-        # while the mean squared error is greater than the bound, keep updating the weights and bias
-        while(self.mse() > bound):
+        
+       # this algorithm tries to minimize the mean squared error by updating the weights and bias with the gradient decreasing the error.
+        while(iterations < 1000):
             gradient = self.summed_gradient()
 
             self.bias -= step_size * gradient[0]
             self.weight[0] -= step_size * gradient[1]
             self.weight[1] -= step_size * gradient[2]
             
-            # put the mse in the list to plot it being minimized
-            mse_list.append(self.mse())
-                
+            norm = math.sqrt(math.pow(gradient[0], 2) + math.pow(gradient[1], 2) + math.pow(gradient[2], 2))
+            self.learning_curve.append(norm)
+            
+           
+            if norm < threshold:
+                break
+           
+           
             iterations += 1
         
         
+       
         return [self.bias, self.weight[0], self.weight[1]]
     
-    #plot gradient decent 4b 
+    #plot gradient decent 4b, plot the initial and final location of the weight and bias.   
+    def plot_learning_curve(self, step_size):
+        #plot the learning curve of the gradient decent, plot the objective function as a function of the number of iterations
+        weight = self.gradient_decent(step_size)
+        
+        plt.plot(self.learning_curve)
+             
+        plt.title('Learning Curve of Gradient Decent')
+        plt.xlabel('Number of Iterations')
+        plt.ylabel('Mean Squared Error')
+        plt.show()
     
+    #plot the initial and final location of the weight and bias.
+    def plot_gradient_decent(self, step_size):
+        x_range = np.arange(2.5, 6.7, 0.1)
+        y_range = self.get_line(self.weight, self.bias)
+        plt.plot(x_range, y_range, color = 'magenta')
+        
+        self.gradient_decent(step_size)
+        new_yrange = self.get_line(self.weight, self.bias)
+        plt.plot(x_range, new_yrange, color = 'red') 
+        plot_2nd_3rd_classes()
+        
+        
     
     
     #randomize the weights and show two output plots with initial, middle and final locations.  4c 
     def radomize_weights(self, bias, weight1, weight2):
-        
+        np.random.seed(475)
         bias = random.uniform(-1, 4)
         weight1 = random.uniform(-3, 1)
         weight2 = random.uniform(-2, 2)
@@ -278,8 +311,8 @@ if __name__ == '__main__':
     # define nonlinear functions weights -> [w0, w1, w2] x1 is petal length x2 is petal width.
     # initial weight (w0) is the bias
     
-    bias3 = -52
-    weight3 = [7, 11]
+    bias3 = -45
+    weight3 = [7,12]
     
     #bias32 = -31
     #weight32 = [2, 13]
@@ -290,7 +323,23 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight3, bias3).plot_mse(weight3))
     
     # 3e
-    #print(NueralNetwork(data_vector, weight3, bias3).plot_gradient(230))
+    #print(NueralNetwork(data_vector, weight3, bias3).plot_gradient(12))
+    
+    # 4a
+    bias4 = -45
+    weight4 = [7, 12]
+    
+    
+    #print(NueralNetwork(data_vector, weight3, bias3).gradient_decent(.2))
+    
+    # 4b
+    #print(NueralNetwork(data_vector, weight4, bias4).plot_learning_curve(-.1))
+    #print(NueralNetwork(data_vector, weight4, bias4).plot_gradient_decent(-.2))
+    
+    # 4c random weights 
+    
+    
+    
     
      
     
