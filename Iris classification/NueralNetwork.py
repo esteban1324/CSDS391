@@ -58,7 +58,7 @@ def sigmoid_prime(x):
 # function that plots the decision boundary for the perceptron (2c)
 def plot_decision_boundary(weight, bias, point):        
         
-        # plot the decision boundary
+    #plot the decision boundary
     x_range = np.arange(2.5, 6.7, 0.1)
     y_range = -(weight[0] * x_range) + bias
         
@@ -188,21 +188,31 @@ class NueralNetwork:
         return (gradient_w0, gradient_w1, gradient_w2)
 
     # plot the gradient summation 
-    def plot_gradient(self):
+    def plot_gradient(self, step_size):
+        
+        # plot the line before taking the gradient
+        x_range = np.arange(2.5, 6.7, 0.1)
+        y_range = self.get_line(self.weight, self.bias)
+        
+        plt.plot(x_range, y_range, color = 'magenta')
         
         #get the tuple from summed_gradient and plot the line of this.
         gradient = self.summed_gradient()
+          
+        #update the weights and bias, and plot the line again
+        self.bias += step_size * gradient[0]
+        self.weight[0] += step_size * gradient[1]
+        self.weight[1] += step_size * gradient[2]
+          
+        new_yrange = self.get_line(self.weight, self.bias)
         
-        # plot the decision boundary
-        x_range = np.arange(2.5, 6.7, 0.1)
-        
-        
-        
+        plt.plot(x_range, new_yrange, color = 'red')
+           
         plot_2nd_3rd_classes()
         
     '''Learning through optmization''' 
     #gradient decent 4a 
-    def gradient_decent(self, bound):
+    def gradient_decent(self, bound, mse_list):
         
         step_size = 0.1
         iterations = 0
@@ -216,7 +226,7 @@ class NueralNetwork:
             self.weight[1] -= step_size * gradient[2]
             
             # put the mse in the list to plot it being minimized
-            
+            mse_list.append(self.mse())
                 
             iterations += 1
         
@@ -227,7 +237,14 @@ class NueralNetwork:
     
     
     
-    #randomize weights 4c 
+    #randomize the weights and show two output plots with initial, middle and final locations.  4c 
+    def radomize_weights(self, bias, weight1, weight2):
+        
+        bias = random.uniform(-1, 4)
+        weight1 = random.uniform(-3, 1)
+        weight2 = random.uniform(-2, 2)
+        
+        return [bias, weight1, weight2]
         
         
         
@@ -273,7 +290,7 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight3, bias3).plot_mse(weight3))
     
     # 3e
-    print(NueralNetwork(data_vector, weight3, bias3).plot_gradient())
+    #print(NueralNetwork(data_vector, weight3, bias3).plot_gradient(230))
     
      
     
