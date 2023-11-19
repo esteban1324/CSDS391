@@ -212,9 +212,9 @@ class NueralNetwork:
         
     '''Learning through optmization''' 
     #gradient decent 4a 
-    def gradient_decent(self, bound, mse_list):
+    def gradient_decent(self, bound, mse_list, step_size):
         
-        step_size = 0.1
+        
         iterations = 0
         
         # while the mean squared error is greater than the bound, keep updating the weights and bias
