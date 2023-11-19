@@ -278,12 +278,7 @@ class NueralNetwork:
         weight2 = random.uniform(-2, 2)
         
         return [bias, weight1, weight2]
-        
-        
-        
-
-
-
+    
 if __name__ == '__main__':
     
     # initialize the weight and bias and point on graph.
