@@ -6,7 +6,7 @@ import random
 import pandas as pd
 
 
-iris = pd.read_csv("irisdata.csv")
+iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width', 'species']
 
@@ -228,6 +228,13 @@ class NueralNetwork:
             self.weight[0] -= step_size * gradient[1]
             self.weight[1] -= step_size * gradient[2]
             
+            # plot the middle line
+            if iterations == 100:
+                x_range = np.arange(2.5, 6.7, 0.1)
+                y_range = self.get_line(self.weight, self.bias)
+                plt.plot(x_range, y_range, color = 'black')
+            
+             
             norm = math.sqrt(math.pow(gradient[0], 2) + math.pow(gradient[1], 2) + math.pow(gradient[2], 2))
             self.learning_curve.append(norm)
             
@@ -262,8 +269,6 @@ class NueralNetwork:
         plt.plot(x_range, y_range, color = 'magenta')
         
         self.gradient_decent(step_size , k)
-        print("weights", self.weight)
-        print("bias", self.bias)
         
         # final line "red line"
         new_yrange = self.get_line(self.weight, self.bias)
@@ -275,7 +280,7 @@ class NueralNetwork:
     
     #randomize the weights and show two output plots with initial, middle and final locations.  4c 
     def radomize_weights(self, bias, weight1, weight2):
-        np.random.seed(475)
+        np.random.seed(232)
         bias = random.uniform(-1, 4)
         weight1 = random.uniform(-3, 1)
         weight2 = random.uniform(-2, 2)
@@ -331,13 +336,13 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight3, bias3).gradient_decent(.2, 1000))
     
     # 4b
-    #print(NueralNetwork(data_vector, weight4, bias4).plot_learning_curve(-.1))
+    #print(NueralNetwork(data_vector, weight4, bias4).plot_learning_curve(-.2, 1000))
     #print(NueralNetwork(data_vector, weight4, bias4).plot_gradient_decent(-.2, 1000))
     
     # 4c random weights 
     random_weights = NueralNetwork(data_vector, weight4, bias4).radomize_weights(bias4, weight4[0], weight4[1])
-    #print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_gradient_decent(-.2, 1000))
-    
+    print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_gradient_decent(-.2, 1000))
+    #print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_learning_curve(-.2, 1000))
     
     
      

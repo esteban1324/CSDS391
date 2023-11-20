@@ -5,7 +5,7 @@ import random
 import pandas as pd
 
 
-iris = pd.read_csv("irisdata.csv")
+iris = pd.read_csv("C:\\Users\\esteb\\OneDrive\\Documents\\GitHub\\CSDS391\\Iris classification\\irisdata.csv")
 
 features = ['sepal_length','sepal_width','petal_length', 'petal_width']
 
@@ -24,7 +24,7 @@ class K_Means:
              
     # initialize the centroids within range of random data points k times
     def initialize_centroids(self)-> np.ndarray:   
-        random.seed(23)
+        np.random.seed(23)
            
         indices = np.random.choice(len(self.data), self.k, replace=False)
         
@@ -38,7 +38,7 @@ class K_Means:
 
         for i in range(self.data.shape[0]):
             k = cluster_assignment[i]
-            distance = np.linalg.norm((data[i, 2:4] - centroids[k, 2:4]) ** 2, axis = 0)
+            distance = np.linalg.norm((data[i, :] - centroids[k, :]) ** 2, axis = 0)
        
             total_distance += distance 
 
@@ -50,8 +50,9 @@ class K_Means:
         
         cluster_assignment = np.zeros((data.shape[0], self.k), float)
         
+        # get all the dimensions of the data points
         for k in range(self.k): 
-            distance = np.linalg.norm(data[:, 2:4] - centroids[k, 2:4], axis = 1)
+            distance = np.linalg.norm(data - centroids[k, :], axis = 1)
             cluster_assignment[:, k] = distance 
                  
         cluster = np.argmin(cluster_assignment, axis = 1)
@@ -114,6 +115,7 @@ class K_Means:
         
         plt.xlabel("iteration")
         plt.ylabel("Sum of error")
+        plt.title("Objective Function for " + str(self.k) + " Clusters")
         
         plt.show()
        
@@ -191,13 +193,15 @@ class K_Means:
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(3, data_vector, 11)
+    x = K_Means(3, data_vector, 20)
+    
+    #x.plot_objective_function()
     
     #print(x.centroids)
      
     #x.plot_decision_boundary()
 
-    #x.plot_learning_algorithm()
+    x.plot_learning_algorithm()
     
     
     
