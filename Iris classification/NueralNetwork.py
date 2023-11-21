@@ -290,9 +290,9 @@ class NueralNetwork:
 if __name__ == '__main__':
     
     # initialize the weight and bias and point on graph.
-    weight = [.6, -1]
-    bias = 4.1
-    point = [4.1, 1.5] 
+    #weight = [.6, -1]
+    #bias = 4.1
+    #point = [4.1, 1.5] 
     
     # 2a
     #plot_2nd_3rd_classes()
@@ -303,9 +303,9 @@ if __name__ == '__main__':
     #print(plot_decision_boundary(weight, 4.1, point))
     
     # 2d     
-    plot_output(data_vector, weight, bias) 
-    weight2 = [.47,3]
-    bias2 = 4.1
+    #plot_output(data_vector, weight, bias) 
+    #weight2 = [.47,3]
+    #bias2 = 4.1
     # 2e 
     #print_output(data_vector, weight, bias2)
     
@@ -314,8 +314,8 @@ if __name__ == '__main__':
     # define nonlinear functions weights -> [w0, w1, w2] x1 is petal length x2 is petal width.
     # initial weight (w0) is the bias
     
-    bias3 = -45
-    weight3 = [7,12]
+    #bias3 = -45
+    #weight3 = [7,12]
     
     #bias32 = -31
     #weight32 = [2, 13]
@@ -329,8 +329,8 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight3, bias3).plot_gradient(12))
     
     # 4a
-    bias4 = -45
-    weight4 = [7, 12]
+    #bias4 = -45
+    #weight4 = [7, 12]
     
     
     #print(NueralNetwork(data_vector, weight3, bias3).gradient_decent(.2, 1000))

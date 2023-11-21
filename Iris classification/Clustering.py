@@ -121,9 +121,7 @@ class K_Means:
        
     # plot the learning algorithm, kmeans algorithm when centoids move and classify clusters,   Q1 (c)
     def plot_learning_algorithm(self):
-        
-        #centroids_list, centroids_history = self.k_means()
-             
+              
         species = {'setosa': 'red', 'versicolor':'green', 'virginica': 'blue'}
         colors = [species[s] for s in iris['species']]       
         
@@ -137,10 +135,9 @@ class K_Means:
             plt.show()
         
         
-    # To be continued: decision boundaries Q1 (d)
+    #decision boundaries Q1 (d)
     def plot_decision_boundary(self):
-        # for k = 2, take the cordinates and get the midpoint of them and plot them along a line with form of y = m(x+a) + b.  
-             
+           
         plt.title("Decision Boundary for " + str(self.k) +  " Clusters")
         plt.xlabel("Petal Length")
         plt.ylabel("Petal Width")
@@ -192,7 +189,7 @@ class K_Means:
 # add the species to the data vector                 
 if __name__ == "__main__":
     
-    x = K_Means(3, data_vector, 20)
+    #x = K_Means(3, data_vector, 20)
     
     #x.plot_objective_function()
     
@@ -200,7 +197,7 @@ if __name__ == "__main__":
      
     #x.plot_decision_boundary()
 
-    x.plot_learning_algorithm()
+    #x.plot_learning_algorithm()
     
     
     
