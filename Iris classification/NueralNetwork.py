@@ -290,7 +290,7 @@ class NueralNetwork:
 if __name__ == '__main__':
     
     # initialize the weight and bias and point on graph.
-    weight = [.47, -1]
+    weight = [.6, -1]
     bias = 4.1
     point = [4.1, 1.5] 
     
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     #print(plot_decision_boundary(weight, 4.1, point))
     
     # 2d     
-    #plot_output(data_vector, weight, bias) 
+    plot_output(data_vector, weight, bias) 
     weight2 = [.47,3]
     bias2 = 4.1
     # 2e 
@@ -340,8 +340,8 @@ if __name__ == '__main__':
     #print(NueralNetwork(data_vector, weight4, bias4).plot_gradient_decent(-.2, 1000))
     
     # 4c random weights 
-    random_weights = NueralNetwork(data_vector, weight4, bias4).radomize_weights(bias4, weight4[0], weight4[1])
-    print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_gradient_decent(-.2, 1000))
+    #random_weights = NueralNetwork(data_vector, weight4, bias4).radomize_weights(bias4, weight4[0], weight4[1])
+    #print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_gradient_decent(-.2, 1000))
     #print(NueralNetwork(data_vector, random_weights[1], random_weights[0]).plot_learning_curve(-.2, 1000))
     
     

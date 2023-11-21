@@ -127,7 +127,6 @@ class K_Means:
         species = {'setosa': 'red', 'versicolor':'green', 'virginica': 'blue'}
         colors = [species[s] for s in iris['species']]       
         
-        
         for i, centroids in enumerate(self.centroids_history):
             plt.figure()
             plt.scatter(self.data[:, 2], self.data[:, 3], color = colors)
