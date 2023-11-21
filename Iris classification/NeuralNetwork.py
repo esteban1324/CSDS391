@@ -106,7 +106,7 @@ def print_output(data, weight, bias):
         print(sigmoid(-weight[0] * process_data[i, 2] - process_data[i, 3] + bias))
       
 
-class NueralNetwork:
+class NeuralNetwork:
     
     def __init__(self, data:np.ndarray, weight, bias):
         self.data = data
