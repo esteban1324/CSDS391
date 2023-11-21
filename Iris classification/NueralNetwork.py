@@ -288,7 +288,7 @@ class NueralNetwork:
         return bias, [weight1, weight2]
     
 if __name__ == '__main__':
-    
+    pass
     # initialize the weight and bias and point on graph.
     #weight = [.6, -1]
     #bias = 4.1

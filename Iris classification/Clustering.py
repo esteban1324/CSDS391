@@ -188,7 +188,7 @@ class K_Means:
 
 # add the species to the data vector                 
 if __name__ == "__main__":
-    
+    pass
     #x = K_Means(3, data_vector, 20)
     
     #x.plot_objective_function()
